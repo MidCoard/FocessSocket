@@ -1,4 +1,4 @@
-# FocessSocket - A Socket Implement for Focess
+# FocessSocket - A Communication API Based on Socket
 
 This API is used to communicate with other framework for Focess. I made this API public because communication in this API is really easy.
 
