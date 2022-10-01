@@ -40,8 +40,15 @@ public abstract class ASocket implements Socket {
     }
 
     @Override
+    public void unregister(Receiver receiver) {
+        this.receivers.remove(receiver);
+        this.packetMethods.values().forEach(list -> list.removeIf(pair -> pair.getKey().equals(receiver)));
+    }
+
+    @Override
     public void unregisterAll() {
         for (final Receiver receiver : this.receivers)
             receiver.unregisterAll();
+        this.receivers.clear();
     }
 }

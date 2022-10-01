@@ -34,7 +34,13 @@ public interface Socket {
     void close();
 
     /**
-     * Unregister the packet-handlers of the plugin
+     * Unregister all the packet receivers
      */
     void unregisterAll();
+
+    /**
+     * Unregister the packet receiver
+     * @param receiver the receiver to packet unregister
+     */
+    void unregister(Receiver receiver);
 }

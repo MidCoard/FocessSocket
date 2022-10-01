@@ -66,4 +66,8 @@ public abstract class AClientReceiver implements ClientReceiver {
         return this.name;
     }
 
+    @Override
+    public void unregister(PackHandler handler) {
+        this.packHandlers.values().forEach(v -> v.remove(handler));
+    }
 }
