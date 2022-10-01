@@ -8,7 +8,7 @@
     <description>Focess Socket API</description>
     <groupId>top.focess</groupId>
     <artifactId>focess-socket</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
 
     <distributionManagement>
@@ -53,8 +53,8 @@
     </dependencies>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <guava.version>31.1-jre</guava.version>
     </properties>
 
