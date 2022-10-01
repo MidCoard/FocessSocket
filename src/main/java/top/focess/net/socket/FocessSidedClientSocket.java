@@ -1,9 +1,9 @@
-package top.focess.net.impl;
+package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
-import top.focess.net.ClientReceiver;
+import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.PacketPreCodec;
-import top.focess.net.Receiver;
+import top.focess.net.receiver.Receiver;
 import top.focess.net.packet.Packet;
 import top.focess.util.Pair;
 

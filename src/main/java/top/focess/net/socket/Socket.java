@@ -1,4 +1,6 @@
-package top.focess.net;
+package top.focess.net.socket;
+
+import top.focess.net.receiver.Receiver;
 
 /**
  * Represents a FocessSocket. This class is used to handle socket.

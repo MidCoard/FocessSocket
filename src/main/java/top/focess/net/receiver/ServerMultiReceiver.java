@@ -1,6 +1,7 @@
-package top.focess.net;
+package top.focess.net.receiver;
 
 import org.jetbrains.annotations.UnmodifiableView;
+import top.focess.net.Client;
 import top.focess.net.packet.Packet;
 
 import java.util.List;

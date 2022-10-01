@@ -1,4 +1,4 @@
-package top.focess.net.impl;
+package top.focess.net.receiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.focess.net.PackHandler;
+import top.focess.net.PacketHandler;
+import top.focess.net.SimpleClient;
 import top.focess.net.packet.*;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;

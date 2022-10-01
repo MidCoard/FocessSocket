@@ -1,4 +1,4 @@
-package top.focess.net.impl;
+package top.focess.net;
 
 import org.jetbrains.annotations.Nullable;
 import top.focess.net.Client;

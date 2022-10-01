@@ -1,4 +1,4 @@
-package top.focess.net.impl;
+package top.focess.net;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

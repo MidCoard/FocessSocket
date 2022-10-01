@@ -1,6 +1,8 @@
-package top.focess.net;
+package top.focess.net.receiver;
 
 import org.jetbrains.annotations.Nullable;
+import top.focess.net.Client;
+import top.focess.net.PackHandler;
 import top.focess.net.packet.Packet;
 
 /**

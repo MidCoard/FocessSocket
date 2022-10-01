@@ -1,5 +1,6 @@
-package top.focess.net;
+package top.focess.net.receiver;
 
+import top.focess.net.PackHandler;
 import top.focess.net.packet.Packet;
 
 /**

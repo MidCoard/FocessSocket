@@ -1,10 +1,10 @@
-package top.focess.net.impl;
+package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
-import top.focess.net.Receiver;
-import top.focess.net.ServerReceiver;
+import top.focess.net.receiver.Receiver;
+import top.focess.net.receiver.ServerReceiver;
 import top.focess.net.packet.ConnectPacket;
 import top.focess.net.packet.Packet;
 import top.focess.net.packet.SidedConnectPacket;
@@ -74,7 +74,7 @@ public class FocessUDPSocket extends ASocket {
 
     @Override
     public boolean containsServerSide() {
-        return true;
+        return this.receivers.size() != 0;
     }
 
     @Override
