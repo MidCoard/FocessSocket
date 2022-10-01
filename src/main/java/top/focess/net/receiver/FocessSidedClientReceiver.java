@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.*;
-import top.focess.net.receiver.AClientReceiver;
 import top.focess.net.socket.FocessSidedClientSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;

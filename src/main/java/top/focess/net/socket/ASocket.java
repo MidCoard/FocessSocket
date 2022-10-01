@@ -3,8 +3,8 @@ package top.focess.net.socket;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.net.PacketHandler;
-import top.focess.net.receiver.Receiver;
 import top.focess.net.packet.Packet;
+import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
 
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class ASocket implements Socket {
 
 
-    protected final Map<Class<? extends Packet>, List<Pair<Receiver, Method>>> packetMethods = Maps.newHashMap();
+    protected final Map<Class<? extends Packet>, List<Pair<Receiver, Method>>> packetMethods = Maps.newConcurrentMap();
     protected final List<Receiver> receivers = Lists.newArrayList();
 
     @Override

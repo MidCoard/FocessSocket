@@ -3,9 +3,10 @@ package top.focess.net.socket;
 import com.google.common.collect.Lists;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
+import top.focess.net.packet.Packet;
+import top.focess.net.receiver.FocessSidedReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.net.receiver.ServerReceiver;
-import top.focess.net.packet.Packet;
 import top.focess.util.Pair;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class FocessSidedSocket extends ASocket {
 
     public FocessSidedSocket(final int localPort) throws IllegalPortException {
         this.localPort = localPort;
+        super.registerReceiver(new FocessSidedReceiver());
         try {
             this.server = new ServerSocket(localPort);
         } catch (final IOException e) {
@@ -75,9 +77,7 @@ public class FocessSidedSocket extends ASocket {
 
     @Override
     public void registerReceiver(final Receiver receiver) {
-        if (!(receiver instanceof ServerReceiver))
-            throw new UnsupportedOperationException();
-        super.registerReceiver(receiver);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -92,5 +92,9 @@ public class FocessSidedSocket extends ASocket {
 
     public int getLocalPort() {
         return this.localPort;
+    }
+
+    public ServerReceiver getReceiver() {
+        return (ServerReceiver) this.receivers.get(0);
     }
 }

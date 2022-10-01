@@ -35,7 +35,6 @@ public interface Socket {
 
     /**
      * Unregister the packet-handlers of the plugin
-     *
      */
     void unregisterAll();
 }

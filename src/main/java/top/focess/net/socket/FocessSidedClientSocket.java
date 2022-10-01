@@ -1,10 +1,11 @@
 package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
-import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.PacketPreCodec;
-import top.focess.net.receiver.Receiver;
 import top.focess.net.packet.Packet;
+import top.focess.net.receiver.ClientReceiver;
+import top.focess.net.receiver.FocessSidedClientReceiver;
+import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
 
 import java.io.IOException;
@@ -17,9 +18,10 @@ public class FocessSidedClientSocket extends ASocket {
     private final String host;
     private final int port;
 
-    public FocessSidedClientSocket(final String host, final int port) {
+    public FocessSidedClientSocket(final String host, final int port, String name) {
         this.host = host;
         this.port = port;
+        super.registerReceiver(new FocessSidedClientReceiver(this, name));
     }
 
     public String getHost() {
@@ -63,9 +65,7 @@ public class FocessSidedClientSocket extends ASocket {
     }
 
     public void registerReceiver(final Receiver receiver) {
-        if (!(receiver instanceof ClientReceiver))
-            throw new UnsupportedOperationException();
-        super.registerReceiver(receiver);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -82,5 +82,9 @@ public class FocessSidedClientSocket extends ASocket {
     public void close() {
         for (final Receiver receiver : this.receivers)
             receiver.close();
+    }
+
+    public ClientReceiver getReceiver() {
+        return (ClientReceiver) this.receivers.get(0);
     }
 }

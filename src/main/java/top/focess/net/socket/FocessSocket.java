@@ -1,7 +1,8 @@
 package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
-import top.focess.net.*;
+import top.focess.net.IllegalPortException;
+import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.Receiver;
@@ -20,6 +21,7 @@ public class FocessSocket extends ASocket {
     private final int localPort;
     private boolean serverSide;
     private boolean clientSide;
+
     public FocessSocket(final int localPort) throws IllegalPortException {
         this.localPort = localPort;
         try {
@@ -45,7 +47,8 @@ public class FocessSocket extends ASocket {
                             try {
                                 method.setAccessible(true);
                                 method.invoke(pair.getKey(), packet);
-                            } catch (final Exception ignored) {}
+                            } catch (final Exception ignored) {
+                            }
                         }
                 } catch (final IOException e) {
                     if (this.server.isClosed())

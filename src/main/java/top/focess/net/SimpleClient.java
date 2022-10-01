@@ -1,7 +1,6 @@
 package top.focess.net;
 
 import org.jetbrains.annotations.Nullable;
-import top.focess.net.Client;
 
 public class SimpleClient implements Client {
 
