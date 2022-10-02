@@ -34,11 +34,11 @@ public class FocessClientReceiver extends AClientReceiver {
     public void onConnected(final ConnectedPacket packet) {
         if (this.connected) {
             if (ASocket.isDebug())
-                System.out.println("SC FocessSocket: server reject client " + this.name + " connect from " + this.localhost + ":" + this.focessSocket.getLocalPort() + " because of already connected");
+                System.out.println("SC FocessSocket: reject client " + this.name + " connect from " + this.host + ":" + this.port + " because of already connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("SC FocessSocket: server accept client " + this.name + " connect from " + this.localhost + ":" + this.focessSocket.getLocalPort());
+            System.out.println("SC FocessSocket: accept client " + this.name + " connect from " + this.host + ":" + this.port);
         this.token = packet.getToken();
         this.id = packet.getClientId();
         this.connected = true;
@@ -48,11 +48,11 @@ public class FocessClientReceiver extends AClientReceiver {
     public void onDisconnected(final DisconnectedPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
-                System.out.println("SC FocessSocket: server reject client " + this.name + " disconnect from " + this.localhost + ":" + this.focessSocket.getLocalPort() + " because of not connected");
+                System.out.println("SC FocessSocket: reject client " + this.name + " disconnect from " + this.host + ":" + this.port + " because of not connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("SC FocessSocket: server accept client " + this.name + " disconnect from " + this.localhost + ":" + this.focessSocket.getLocalPort());
+            System.out.println("SC FocessSocket: accept client " + this.name + " disconnect from "  + this.host + ":" + this.port);
         this.connected = false;
         this.focessSocket.sendPacket(this.host, this.port, new ConnectPacket(this.localhost, this.focessSocket.getLocalPort(), this.name));
     }
@@ -61,11 +61,11 @@ public class FocessClientReceiver extends AClientReceiver {
     public void onServerPacket(final ServerPackPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
-                System.out.println("SC FocessSocket: server reject client " + this.name + " send packet from " + this.localhost + ":" + this.focessSocket.getLocalPort() + " because of not connected");
+                System.out.println("SC FocessSocket: reject client " + this.name + " receive packet from " + this.host + ":" + this.port + " because of not connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("SC FocessSocket: server accept client " + this.name + " send packet from " + this.localhost + ":" + this.focessSocket.getLocalPort());
+            System.out.println("SC FocessSocket: accept client " + this.name + " receive packet from " + this.host + ":" + this.port);
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
             packHandler.handle(this.id, packet.getPacket());
     }

@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="add ServerPackPacket and ClientPackPacket toString method">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/PackHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/PackHandler.java" afterDir="false" />
+    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="update to 1.0.5">
       <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessClientReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessClientReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessReceiver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedClientReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedClientReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPMultiReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPMultiReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPReceiver.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +100,7 @@
       <workItem from="1664662462437" duration="1452000" />
       <workItem from="1664703764845" duration="16296000" />
       <workItem from="1664740955884" duration="121000" />
-      <workItem from="1664741269306" duration="2759000" />
+      <workItem from="1664741269306" duration="3275000" />
     </task>
     <task id="LOCAL-00001" summary="change gitignore">
       <created>1664646417705</created>
@@ -185,7 +179,21 @@
       <option name="project" value="LOCAL" />
       <updated>1664741641632</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="add PackHandler clientId argument">
+      <created>1664745031393</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1664745031393</updated>
+    </task>
+    <task id="LOCAL-00013" summary="update to 1.0.5">
+      <created>1664745054572</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1664745054572</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,6 +222,8 @@
     <MESSAGE value="add debug message" />
     <MESSAGE value="update to 1.0.3" />
     <MESSAGE value="add ServerPackPacket and ClientPackPacket toString method" />
-    <option name="LAST_COMMIT_MESSAGE" value="add ServerPackPacket and ClientPackPacket toString method" />
+    <MESSAGE value="add PackHandler clientId argument" />
+    <MESSAGE value="update to 1.0.5" />
+    <option name="LAST_COMMIT_MESSAGE" value="update to 1.0.5" />
   </component>
 </project>
