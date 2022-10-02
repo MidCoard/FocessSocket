@@ -7,7 +7,6 @@ import top.focess.net.PackHandler;
  * The class is used to handle packet.
  */
 public interface Receiver {
-
     /**
      * Close the receiver.
      */

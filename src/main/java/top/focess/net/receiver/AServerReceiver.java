@@ -75,4 +75,9 @@ public abstract class AServerReceiver implements ServerReceiver {
     public void unregister(PackHandler handler) {
         this.packHandlers.values().forEach(v -> v.values().forEach(v1 -> v1.remove(handler)));
     }
+
+    @Override
+    public void disconnect(String client) {
+        this.clientInfos.values().removeIf(simpleClient -> simpleClient.getName().equals(client));
+    }
 }

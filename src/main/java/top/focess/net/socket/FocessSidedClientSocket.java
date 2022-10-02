@@ -33,35 +33,39 @@ public class FocessSidedClientSocket extends ASocket {
     }
 
     public <T extends Packet> boolean sendPacket(final T packet) {
+        if (isDebug())
+            System.out.println("PC FocessSocket: send packet: " + packet);
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
-        if (packetPreCodec.writePacket(packet))
-            try {
-                final java.net.Socket socket = new java.net.Socket(this.host, this.port);
-                final OutputStream outputStream = socket.getOutputStream();
-                outputStream.write(packetPreCodec.getBytes());
-                outputStream.flush();
-                socket.shutdownOutput();
-                final InputStream inputStream = socket.getInputStream();
-                final byte[] buffer = new byte[1024];
-                int length;
-                final PacketPreCodec codec = new PacketPreCodec();
-                while ((length = inputStream.read(buffer)) != -1)
-                    codec.push(buffer, length);
-                final Packet p = codec.readPacket();
-                if (p != null)
-                    for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(p.getClass(), Lists.newArrayList())) {
-                        final Method method = pair.getValue();
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(pair.getKey(), p);
-                        } catch (final Exception ignored) {
-                        }
-                    }
-                return true;
-            } catch (final IOException e) {
+        try {
+            if (!packetPreCodec.writePacket(packet))
                 return false;
-            }
-        return false;
+            final java.net.Socket socket = new java.net.Socket(this.host, this.port);
+            final OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(packetPreCodec.getBytes());
+            outputStream.flush();
+            socket.shutdownOutput();
+            final InputStream inputStream = socket.getInputStream();
+            final byte[] buffer = new byte[1024];
+            int length;
+            final PacketPreCodec codec = new PacketPreCodec();
+            while ((length = inputStream.read(buffer)) != -1)
+                codec.push(buffer, length);
+            final Packet p = codec.readPacket();
+            if (isDebug())
+                System.out.println("PC FocessSocket: receive packet: " + p);
+            if (p != null)
+                for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(p.getClass(), Lists.newArrayList())) {
+                    final Method method = pair.getValue();
+                    try {
+                        method.setAccessible(true);
+                        method.invoke(pair.getKey(), p);
+                    } catch (final Exception ignored) {
+                    }
+                }
+            return true;
+        } catch (final Exception e) {
+            return false;
+        }
     }
 
     public void registerReceiver(final Receiver receiver) {

@@ -36,6 +36,8 @@ public class FocessUDPSocket extends ASocket {
                     final PacketPreCodec packetPreCodec = new PacketPreCodec();
                     packetPreCodec.push(this.packet.getData(), this.packet.getOffset(), this.packet.getLength());
                     Packet packet = packetPreCodec.readPacket();
+                    if (isDebug())
+                        System.out.println("P FocessSocket: receive packet: " + packet);
                     if (packet != null) {
                         if (packet instanceof SidedConnectPacket) {
                             final String name = ((SidedConnectPacket) packet).getName();
@@ -46,6 +48,8 @@ public class FocessUDPSocket extends ASocket {
                             try {
                                 method.setAccessible(true);
                                 final Object o = method.invoke(pair.getKey(), packet);
+                                if (isDebug())
+                                    System.out.println("P FocessSocket: send packet: " + o);
                                 if (o != null) {
                                     final PacketPreCodec handler = new PacketPreCodec();
                                     handler.writePacket((Packet) o);

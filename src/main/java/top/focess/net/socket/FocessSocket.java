@@ -41,6 +41,8 @@ public class FocessSocket extends ASocket {
                         packetPreCodec.push(buffer, length);
                     inputStream.close();
                     final Packet packet = packetPreCodec.readPacket();
+                    if (isDebug())
+                        System.out.println("S FocessSocket: receive packet: " + packet);
                     if (packet != null)
                         for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
                             final Method method = pair.getValue();
@@ -78,6 +80,8 @@ public class FocessSocket extends ASocket {
 
     public <T extends Packet> boolean sendPacket(final String targetHost, final int targetPort, final T packet) {
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
+        if (isDebug())
+            System.out.println("S FocessSocket: send packet: " + packet);
         if (packetPreCodec.writePacket(packet))
             try {
                 final java.net.Socket socket = new java.net.Socket(targetHost, targetPort);

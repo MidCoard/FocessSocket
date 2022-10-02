@@ -2,32 +2,34 @@ package top.focess.net;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import top.focess.net.packet.MessagePacket;
+import top.focess.net.receiver.FocessClientReceiver;
 import top.focess.net.receiver.ServerReceiver;
+import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessSidedClientSocket;
 import top.focess.net.socket.FocessSidedSocket;
+import top.focess.net.socket.FocessSocket;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SocketTest {
 
-    @RepeatedTest(5)
+    static {
+        ASocket.enableDebug();
+    }
+
+    @Test
     public void testSocket() throws IllegalPortException, InterruptedException {
-        FocessSidedSocket sidedSocket = new FocessSidedSocket(9081);
-        FocessSidedClientSocket sidedClientSocket = new FocessSidedClientSocket("localhost", 9081, "fuck");
-        ServerReceiver serverReceiver = sidedSocket.getReceiver();
-        AtomicReference<String> reference = new AtomicReference<>();
-        serverReceiver.register("fuck", MessagePacket.class, (packet) -> {
-            Assertions.assertEquals(packet.getMessage(), "fuckyu");
-            reference.set("fuckyu");
+        FocessSidedClientSocket socket = new FocessSidedClientSocket("49.233.254.244",9321,"test");
+        socket.getReceiver().register(MessagePacket.class, packet -> {
+            System.out.println(packet.getMessage());
         });
 
-        Thread.sleep(1000);
-
-        sidedClientSocket.getReceiver().sendPacket(new MessagePacket("fuckyu"));
-        Thread.sleep(2000);
-        Assertions.assertEquals(reference.get(), "fuckyu");
-        sidedSocket.close();
-        sidedClientSocket.close();
+        Thread.sleep(4000);
+        socket.getReceiver().sendPacket(new MessagePacket("Hello"));
+        socket.getReceiver().sendPacket(new MessagePacket("Goodbye"));
+        socket.getReceiver().sendPacket(new MessagePacket("query"));
+        Thread.sleep(5000);
     }
 }

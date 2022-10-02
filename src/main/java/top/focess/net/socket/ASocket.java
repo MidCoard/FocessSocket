@@ -14,6 +14,19 @@ import java.util.Map;
 
 public abstract class ASocket implements Socket {
 
+    private static boolean debug = false;
+
+    public static void enableDebug() {
+        debug = true;
+    }
+
+    public static void disableDebug() {
+        debug = false;
+    }
+
+    public static boolean isDebug() {
+        return debug;
+    }
 
     protected final Map<Class<? extends Packet>, List<Pair<Receiver, Method>>> packetMethods = Maps.newConcurrentMap();
     protected final List<Receiver> receivers = Lists.newArrayList();

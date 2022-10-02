@@ -39,6 +39,8 @@ public class FocessSidedSocket extends ASocket {
                     while ((length = inputStream.read(buffer)) != -1)
                         packetPreCodec.push(buffer, length);
                     final Packet packet = packetPreCodec.readPacket();
+                    if (isDebug())
+                        System.out.println("P FocessSocket: receive packet: " + packet);
                     final OutputStream outputStream = socket.getOutputStream();
                     if (packet != null)
                         for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
@@ -46,6 +48,8 @@ public class FocessSidedSocket extends ASocket {
                             try {
                                 method.setAccessible(true);
                                 final Object o = method.invoke(pair.getKey(), packet);
+                                if (isDebug())
+                                    System.out.println("P FocessSocket: send packet: " + o);
                                 if (o != null) {
                                     final PacketPreCodec handler = new PacketPreCodec();
                                     handler.writePacket((Packet) o);

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.*;
+import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessSidedClientSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
@@ -46,8 +47,13 @@ public class FocessSidedClientReceiver extends AClientReceiver {
 
     @PacketHandler
     public void onConnected(final ConnectedPacket packet) {
-        if (this.connected)
+        if (this.connected) {
+            if (ASocket.isDebug())
+                System.out.println("PC FocessSocket: server reject client " + this.name + " connect because of already connected");
             return;
+        }
+        if (ASocket.isDebug())
+            System.out.println("PC FocessSocket: server accept client " + this.name + " connect");
         this.token = packet.getToken();
         this.id = packet.getClientId();
         this.connected = true;
@@ -55,12 +61,26 @@ public class FocessSidedClientReceiver extends AClientReceiver {
 
     @PacketHandler
     public void onDisconnected(final DisconnectedPacket packet) {
+        if (!this.connected) {
+            if (ASocket.isDebug())
+                System.out.println("PC FocessSocket: server reject client " + this.name + " disconnect because of not connected");
+            return;
+        }
+        if (ASocket.isDebug())
+            System.out.println("PC FocessSocket: server accept client " + this.name + " disconnect");
         this.connected = false;
         this.focessSidedClientSocket.sendPacket(new SidedConnectPacket(this.name));
     }
 
     @PacketHandler
     public void onServerPacket(final ServerPackPacket packet) {
+        if (!this.connected) {
+            if (ASocket.isDebug())
+                System.out.println("PC FocessSocket: server reject client " + this.name + " packet because of not connected");
+            return;
+        }
+        if (ASocket.isDebug())
+            System.out.println("PC FocessSocket: server accept client " + this.name + " packet");
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
             packHandler.handle(packet.getPacket());
     }

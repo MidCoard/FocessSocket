@@ -38,6 +38,12 @@ public interface ServerReceiver extends Receiver {
     boolean isConnected(String client);
 
     /**
+     * Disconnect the client
+     * @param client the client name
+     */
+    void disconnect(String client);
+
+    /**
      * Get the client by given name
      *
      * @param name the client name
