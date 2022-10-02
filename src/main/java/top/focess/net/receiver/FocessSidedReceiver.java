@@ -101,7 +101,7 @@ public class FocessSidedReceiver extends AServerReceiver {
                 if (ASocket.isDebug())
                     System.out.println("P FocessSocket: server accept client " + packet.getClientId() + " send client packet");
                 for (final PackHandler packHandler : this.packHandlers.getOrDefault(simpleClient.getName(), Maps.newHashMap()).getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
-                    packHandler.handle(packet.getPacket());
+                    packHandler.handle(simpleClient.getId(), packet.getPacket());
                 return this.packets.getOrDefault(simpleClient.getName(), Queues.newConcurrentLinkedQueue()).poll();
             } else if (ASocket.isDebug())
                 System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " client packet because of token error");

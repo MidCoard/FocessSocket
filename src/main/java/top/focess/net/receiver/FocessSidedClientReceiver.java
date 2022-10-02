@@ -82,7 +82,7 @@ public class FocessSidedClientReceiver extends AClientReceiver {
         if (ASocket.isDebug())
             System.out.println("PC FocessSocket: server accept client " + this.name + " packet");
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
-            packHandler.handle(packet.getPacket());
+            packHandler.handle(this.id, packet.getPacket());
     }
 
     @Override

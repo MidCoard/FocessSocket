@@ -6,7 +6,7 @@ import top.focess.net.packet.Packet;
  * Represents a packet handler to define how to handle packet.
  *
  * @param <T> the packet type
- *            This is a functional interface whose functional method is {@link PackHandler#handle(Packet)}
+ *            This is a functional interface whose functional method is {@link PackHandler#handle(int, Packet)}
  */
 public interface PackHandler<T extends Packet> {
 
@@ -15,5 +15,5 @@ public interface PackHandler<T extends Packet> {
      *
      * @param packet the packet
      */
-    void handle(T packet);
+    void handle(int clientId, T packet);
 }

@@ -67,7 +67,7 @@ public class FocessClientReceiver extends AClientReceiver {
         if (ASocket.isDebug())
             System.out.println("SC FocessSocket: server accept client " + this.name + " send packet from " + this.localhost + ":" + this.focessSocket.getLocalPort());
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
-            packHandler.handle(packet.getPacket());
+            packHandler.handle(this.id, packet.getPacket());
     }
 
     @Override

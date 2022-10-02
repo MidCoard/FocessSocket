@@ -92,7 +92,7 @@ public class FocessReceiver extends AServerReceiver {
                 if (ASocket.isDebug())
                     System.out.println("S FocessSocket: server accept client " + packet.getClientId() + " send client packet");
                 for (final PackHandler packHandler : this.packHandlers.getOrDefault(simpleClient.getName(), Maps.newHashMap()).getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
-                    packHandler.handle(packet.getPacket());
+                    packHandler.handle(simpleClient.getId(), packet.getPacket());
             } else if (ASocket.isDebug())
                 System.out.println("S FocessSocket: server reject client " + packet.getClientId() + " client packet because of token conflict");
         } else if (ASocket.isDebug())
