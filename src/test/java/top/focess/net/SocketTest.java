@@ -22,7 +22,7 @@ public class SocketTest {
     @Test
     public void testSocket() throws IllegalPortException, InterruptedException {
         FocessSidedClientSocket socket = new FocessSidedClientSocket("49.233.254.244",9321,"test");
-        socket.getReceiver().register(MessagePacket.class, packet -> {
+        socket.getReceiver().register(MessagePacket.class, (id,packet) -> {
             System.out.println(packet.getMessage());
         });
 
