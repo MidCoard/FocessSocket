@@ -57,6 +57,7 @@ public class FocessSidedSocket extends ASocket {
                                     outputStream.flush();
                                 }
                             } catch (final Exception ignored) {
+                                ignored.printStackTrace();
                             }
                         }
                     socket.shutdownOutput();

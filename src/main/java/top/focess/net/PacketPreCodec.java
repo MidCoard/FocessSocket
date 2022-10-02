@@ -240,7 +240,7 @@ public class PacketPreCodec {
             this.writeInt(packetId);
             packetCodec.writePacket(packet, this);
             return true;
-        }
+        } else System.out.println("PacketCodec not found for packet id " + packetId);
         return false;
     }
 
