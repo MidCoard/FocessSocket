@@ -31,4 +31,11 @@ public class ClientPackPacket extends ClientPacket {
     public Packet getPacket() {
         return this.packet;
     }
+
+    @Override
+    public String toString() {
+        return "ClientPackPacket{" +
+                "packet=" + packet +
+                "} " + super.toString();
+    }
 }

@@ -28,4 +28,11 @@ public class ServerPackPacket extends ServerPacket {
     public Packet getPacket() {
         return this.packet;
     }
+
+    @Override
+    public String toString() {
+        return "ServerPackPacket{" +
+                "packet=" + packet +
+                "} " + super.toString();
+    }
 }
