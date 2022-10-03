@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="add FocessUDPMultiReceiver disconnect client id method">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-    </list>
+    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="gitignore" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +12,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -103,7 +100,7 @@
       <workItem from="1664740955884" duration="121000" />
       <workItem from="1664741269306" duration="8951000" />
       <workItem from="1664787355110" duration="586000" />
-      <workItem from="1664788177592" duration="598000" />
+      <workItem from="1664788177592" duration="912000" />
     </task>
     <task id="LOCAL-00001" summary="change gitignore">
       <created>1664646417705</created>
@@ -224,7 +221,21 @@
       <option name="project" value="LOCAL" />
       <updated>1664787699119</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="add FocessUDPMultiReceiver disconnect client id method">
+      <created>1664788802114</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1664788802114</updated>
+    </task>
+    <task id="LOCAL-00019" summary="gitignore">
+      <created>1664789070315</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1664789070315</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -259,6 +270,7 @@
     <MESSAGE value="fix SocketTest" />
     <MESSAGE value="modify PacketPreCodec" />
     <MESSAGE value="add FocessUDPMultiReceiver disconnect client id method" />
-    <option name="LAST_COMMIT_MESSAGE" value="add FocessUDPMultiReceiver disconnect client id method" />
+    <MESSAGE value="gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="gitignore" />
   </component>
 </project>
