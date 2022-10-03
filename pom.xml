@@ -8,7 +8,7 @@
     <description>Focess Socket API</description>
     <groupId>top.focess</groupId>
     <artifactId>focess-socket</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
 
 
     <distributionManagement>
