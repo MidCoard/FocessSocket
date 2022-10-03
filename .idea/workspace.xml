@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="update to 1.0.5">
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessClientReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessClientReceiver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedClientReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessSidedClientReceiver.java" afterDir="false" />
+    <list default="true" id="a0f137d3-2fa5-4cb0-abd4-b5ca82aeede2" name="Changes" comment="modify PacketPreCodec">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPMultiReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/FocessUDPMultiReceiver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/ServerMultiReceiver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/top/focess/net/receiver/ServerMultiReceiver.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +101,8 @@
       <workItem from="1664662462437" duration="1452000" />
       <workItem from="1664703764845" duration="16296000" />
       <workItem from="1664740955884" duration="121000" />
-      <workItem from="1664741269306" duration="3275000" />
+      <workItem from="1664741269306" duration="8951000" />
+      <workItem from="1664787355110" duration="315000" />
     </task>
     <task id="LOCAL-00001" summary="change gitignore">
       <created>1664646417705</created>
@@ -193,7 +195,28 @@
       <option name="project" value="LOCAL" />
       <updated>1664745054572</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="rename debug">
+      <created>1664745547742</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1664745547742</updated>
+    </task>
+    <task id="LOCAL-00015" summary="fix SocketTest">
+      <created>1664745629091</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1664745629091</updated>
+    </task>
+    <task id="LOCAL-00016" summary="modify PacketPreCodec">
+      <created>1664752821429</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1664752821429</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -224,6 +247,9 @@
     <MESSAGE value="add ServerPackPacket and ClientPackPacket toString method" />
     <MESSAGE value="add PackHandler clientId argument" />
     <MESSAGE value="update to 1.0.5" />
-    <option name="LAST_COMMIT_MESSAGE" value="update to 1.0.5" />
+    <MESSAGE value="rename debug" />
+    <MESSAGE value="fix SocketTest" />
+    <MESSAGE value="modify PacketPreCodec" />
+    <option name="LAST_COMMIT_MESSAGE" value="modify PacketPreCodec" />
   </component>
 </project>

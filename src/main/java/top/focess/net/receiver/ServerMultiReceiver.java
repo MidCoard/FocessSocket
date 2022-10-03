@@ -27,4 +27,10 @@ public interface ServerMultiReceiver extends ServerReceiver {
      */
     @UnmodifiableView
     List<Client> getClients(String name);
+
+    /**
+     * Disconnect the client by given id
+     * @param id the client id
+     */
+    void disconnect(int id);
 }

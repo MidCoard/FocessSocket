@@ -35,7 +35,7 @@ public class FocessUDPMultiReceiver extends AServerReceiver implements ServerMul
         }, Duration.ZERO, Duration.ofSeconds(1));
     }
 
-    private void disconnect(final int clientId) {
+    public void disconnect(final int clientId) {
         final SimpleClient simpleClient = this.clientInfos.remove(clientId);
         if (simpleClient != null)
             this.focessUDPSocket.sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new DisconnectedPacket());
