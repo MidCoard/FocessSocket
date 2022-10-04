@@ -16,7 +16,6 @@ public class FocessClientReceiver extends AClientReceiver {
     private final String localhost;
     private final FocessSocket focessSocket;
     private final Scheduler scheduler = new FocessScheduler("FocessClientReceiver");
-    private volatile boolean connected;
 
     public FocessClientReceiver(final FocessSocket focessSocket, final String localhost, final String host, final int port, final String name) {
         super(host, port, name);

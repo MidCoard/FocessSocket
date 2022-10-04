@@ -2,15 +2,27 @@ package top.focess.net.receiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.focess.net.Client;
 import top.focess.net.PackHandler;
+import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
+import top.focess.net.packet.ClientPackPacket;
+import top.focess.net.packet.HeartPacket;
 import top.focess.net.packet.Packet;
+import top.focess.net.packet.ServerPackPacket;
+import top.focess.net.socket.ASocket;
+import top.focess.net.socket.SendableSocket;
+import top.focess.net.socket.Socket;
+import top.focess.scheduler.FocessScheduler;
+import top.focess.scheduler.Scheduler;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class AServerReceiver implements ServerReceiver {
@@ -19,6 +31,8 @@ public abstract class AServerReceiver implements ServerReceiver {
     protected final Map<Integer, Long> lastHeart = Maps.newConcurrentMap();
     protected final Map<Integer, SimpleClient> clientInfos = Maps.newConcurrentMap();
     protected final Map<String, Map<Class<?>, List<PackHandler>>> packHandlers = Maps.newConcurrentMap();
+    protected final Scheduler scheduler;
+    protected final Socket socket;
     protected int defaultClientId;
 
     @NotNull
@@ -39,6 +53,18 @@ public abstract class AServerReceiver implements ServerReceiver {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public AServerReceiver(Socket socket) {
+        this.socket = socket;
+        this.scheduler = new FocessScheduler("FocessServerSocket");
+        this.scheduler.runTimer(() -> {
+            for (final SimpleClient simpleClient : this.clientInfos.values()) {
+                final long time = this.lastHeart.getOrDefault(simpleClient.getId(), 0L);
+                if (System.currentTimeMillis() - time > 10 * 1000)
+                    this.clientInfos.remove(simpleClient.getId());
+            }
+        }, Duration.ZERO, Duration.ofSeconds(1));
     }
 
     @Override
@@ -79,5 +105,56 @@ public abstract class AServerReceiver implements ServerReceiver {
     @Override
     public void disconnect(String client) {
         this.clientInfos.values().removeIf(simpleClient -> simpleClient.getName().equals(client));
+    }
+
+    @PacketHandler
+    public void onHeart(@NotNull final HeartPacket packet) {
+        if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send heart");
+        if (this.clientInfos.get(packet.getClientId()) != null) {
+            final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
+            if (simpleClient.getToken().equals(packet.getToken()) && System.currentTimeMillis() + 5 * 1000 > packet.getTime()) {
+                if (ASocket.isDebug())
+                    System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " send heart");
+                this.lastHeart.put(simpleClient.getId(), packet.getTime());
+            } else if (ASocket.isDebug())
+                System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " heart because of token error");
+        } else if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " send heart because of client not exist");
+    }
+
+    @PacketHandler
+    public void onClientPacket(@NotNull final ClientPackPacket packet) {
+        if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send client packet");
+        if (this.clientInfos.get(packet.getClientId()) != null) {
+            final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
+            if (simpleClient.getToken().equals(packet.getToken())) {
+                if (ASocket.isDebug())
+                    System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " send client packet");
+                for (final PackHandler packHandler : this.packHandlers.getOrDefault(simpleClient.getName(), Maps.newHashMap()).getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
+                    packHandler.handle(simpleClient.getId(), packet.getPacket());
+            } else if (ASocket.isDebug())
+                System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of token conflict");
+        } else if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of client not exist");
+    }
+
+    @Override
+    public void close() {
+        if (this.scheduler != null)
+            this.scheduler.close();
+        for (final Integer id : this.clientInfos.keySet())
+            this.disconnect(id);
+        this.clientInfos.clear();
+        this.unregisterAll();
+    }
+
+    @Override
+    public void sendPacket(final String client, final Packet packet) {
+        if (this.socket instanceof SendableSocket)
+            for (final SimpleClient simpleClient : this.clientInfos.values())
+                if (simpleClient.getName().equals(client))
+                    ((SendableSocket) this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
     }
 }

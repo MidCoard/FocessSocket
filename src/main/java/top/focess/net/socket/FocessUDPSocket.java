@@ -17,7 +17,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
-public class FocessUDPSocket extends ASocket {
+public class FocessUDPSocket extends ASocket implements SendableSocket {
 
     private final DatagramSocket socket;
     private final DatagramPacket packet;
@@ -77,29 +77,20 @@ public class FocessUDPSocket extends ASocket {
     }
 
     @Override
-    public boolean containsServerSide() {
-        return this.receivers.size() != 0;
-    }
-
-    @Override
-    public boolean containsClientSide() {
-        return false;
-    }
-
-    @Override
     public void close() {
-        for (final Receiver receiver : this.receivers)
-            receiver.close();
+        super.close();
         this.socket.close();
     }
 
-    public void sendPacket(final String host, final int port, final Packet packet) {
+    public boolean sendPacket(final String host, final int port, final Packet packet) {
         final PacketPreCodec handler = new PacketPreCodec();
         handler.writePacket(packet);
         final DatagramPacket sendPacket = new DatagramPacket(handler.getBytes(), handler.getBytes().length, new InetSocketAddress(host, port));
         try {
             this.socket.send(sendPacket);
+            return true;
         } catch (final IOException ignored) {
+            return false;
         }
     }
 }

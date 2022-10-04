@@ -2,6 +2,7 @@ package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.Packet;
 import top.focess.net.receiver.Receiver;
@@ -53,7 +54,8 @@ public abstract class ASocket implements Socket {
     }
 
     @Override
-    public void unregister(Receiver receiver) {
+    public void unregister(@NotNull Receiver receiver) {
+        receiver.close();
         this.receivers.remove(receiver);
         this.packetMethods.values().forEach(list -> list.removeIf(pair -> pair.getKey().equals(receiver)));
     }
@@ -61,7 +63,24 @@ public abstract class ASocket implements Socket {
     @Override
     public void unregisterAll() {
         for (final Receiver receiver : this.receivers)
-            receiver.unregisterAll();
+            receiver.close();
         this.receivers.clear();
+        this.packetMethods.clear();
+    }
+
+    @Override
+    public void close() {
+        for (final Receiver receiver : this.receivers)
+            receiver.close();
+    }
+
+    @Override
+    public boolean containsClientSide() {
+        return this.receivers.stream().anyMatch(Receiver::isClientSide);
+    }
+
+    @Override
+    public boolean containsServerSide() {
+        return this.receivers.stream().anyMatch(Receiver::isServerSide);
     }
 }

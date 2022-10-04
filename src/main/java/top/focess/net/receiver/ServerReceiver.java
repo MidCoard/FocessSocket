@@ -3,6 +3,7 @@ package top.focess.net.receiver;
 import org.jetbrains.annotations.Nullable;
 import top.focess.net.Client;
 import top.focess.net.PackHandler;
+import top.focess.net.packet.DisconnectedPacket;
 import top.focess.net.packet.Packet;
 
 /**
@@ -52,4 +53,22 @@ public interface ServerReceiver extends Receiver {
     @Nullable
     Client getClient(String name);
 
+
+    /**
+     * Disconnect the client by given id
+     *
+     * @param id the client id
+     * @return the disconnected packet
+     */
+    DisconnectedPacket disconnect(int id);
+
+    @Override
+    default boolean isServerSide() {
+        return true;
+    }
+
+    @Override
+    default boolean isClientSide() {
+        return false;
+    }
 }

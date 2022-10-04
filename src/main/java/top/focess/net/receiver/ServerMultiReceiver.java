@@ -2,6 +2,7 @@ package top.focess.net.receiver;
 
 import org.jetbrains.annotations.UnmodifiableView;
 import top.focess.net.Client;
+import top.focess.net.packet.DisconnectedPacket;
 import top.focess.net.packet.Packet;
 
 import java.util.List;
@@ -28,9 +29,4 @@ public interface ServerMultiReceiver extends ServerReceiver {
     @UnmodifiableView
     List<Client> getClients(String name);
 
-    /**
-     * Disconnect the client by given id
-     * @param id the client id
-     */
-    void disconnect(int id);
 }

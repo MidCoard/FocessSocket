@@ -66,4 +66,14 @@ public interface ClientReceiver extends Receiver {
      * @return the client token
      */
     String getClientToken();
+
+    @Override
+    default boolean isClientSide() {
+        return true;
+    }
+
+    @Override
+    default boolean isServerSide() {
+        return false;
+    }
 }

@@ -8,9 +8,9 @@ import top.focess.net.receiver.Receiver;
 public interface Socket {
 
     /**
-     * Register packet receiver for this socket
+     * Register receiver for this socket
      *
-     * @param receiver the packet receiver for this socket
+     * @param receiver the receiver for this socket
      */
     void registerReceiver(Receiver receiver);
 
@@ -29,18 +29,18 @@ public interface Socket {
     boolean containsClientSide();
 
     /**
-     * Close the socket
+     * Close the socket, which will close all the receivers
      */
     void close();
 
     /**
-     * Unregister all the packet receivers
+     * Unregister all receivers, which will close all the receivers, but the socket will not be closed
      */
     void unregisterAll();
 
     /**
-     * Unregister the packet receiver
-     * @param receiver the receiver to packet unregister
+     * Unregister the receiver, which will close the receiver
+     * @param receiver the receiver
      */
     void unregister(Receiver receiver);
 }

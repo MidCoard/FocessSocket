@@ -18,7 +18,6 @@ public class FocessSidedClientReceiver extends AClientReceiver {
 
     private final FocessSidedClientSocket focessSidedClientSocket;
     private final Scheduler scheduler = new FocessScheduler("FocessSidedClientReceiver");
-
     private final Queue<Packet> packets = Queues.newConcurrentLinkedQueue();
 
     public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket focessSidedClientSocket, final String name) {
@@ -88,6 +87,7 @@ public class FocessSidedClientReceiver extends AClientReceiver {
     @Override
     public void close() {
         this.scheduler.close();
+        this.packets.clear();
         this.unregisterAll();
     }
 }

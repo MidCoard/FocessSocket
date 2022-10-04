@@ -72,22 +72,6 @@ public class FocessSidedClientSocket extends ASocket {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean containsServerSide() {
-        return false;
-    }
-
-    @Override
-    public boolean containsClientSide() {
-        return true;
-    }
-
-    @Override
-    public void close() {
-        for (final Receiver receiver : this.receivers)
-            receiver.close();
-    }
-
     public ClientReceiver getReceiver() {
         return (ClientReceiver) this.receivers.get(0);
     }

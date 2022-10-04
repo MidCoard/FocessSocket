@@ -22,7 +22,7 @@ public class FocessSidedSocket extends ASocket {
 
     public FocessSidedSocket(final int localPort) throws IllegalPortException {
         this.localPort = localPort;
-        super.registerReceiver(new FocessSidedReceiver());
+        super.registerReceiver(new FocessSidedReceiver(this));
         try {
             this.server = new ServerSocket(localPort);
         } catch (final IOException e) {
@@ -72,8 +72,7 @@ public class FocessSidedSocket extends ASocket {
 
     @Override
     public void close() {
-        for (final Receiver receiver : this.receivers)
-            receiver.close();
+        super.close();
         try {
             this.server.close();
         } catch (final IOException ignored) {
@@ -83,16 +82,6 @@ public class FocessSidedSocket extends ASocket {
     @Override
     public void registerReceiver(final Receiver receiver) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsServerSide() {
-        return true;
-    }
-
-    @Override
-    public boolean containsClientSide() {
-        return false;
     }
 
     public int getLocalPort() {

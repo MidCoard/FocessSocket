@@ -15,12 +15,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 
-public class FocessSocket extends ASocket {
+public class FocessSocket extends ASocket implements SendableSocket {
 
     private final ServerSocket server;
     private final int localPort;
-    private boolean serverSide;
-    private boolean clientSide;
 
     public FocessSocket(final int localPort) throws IllegalPortException {
         this.localPort = localPort;
@@ -60,25 +58,7 @@ public class FocessSocket extends ASocket {
         thread.start();
     }
 
-    public void registerReceiver(final Receiver receiver) {
-        if (receiver instanceof ServerReceiver)
-            this.serverSide = true;
-        if (receiver instanceof ClientReceiver)
-            this.clientSide = true;
-        super.registerReceiver(receiver);
-    }
-
-    @Override
-    public boolean containsServerSide() {
-        return this.serverSide;
-    }
-
-    @Override
-    public boolean containsClientSide() {
-        return this.clientSide;
-    }
-
-    public <T extends Packet> boolean sendPacket(final String targetHost, final int targetPort, final T packet) {
+    public boolean sendPacket(final String targetHost, final int targetPort, final Packet packet) {
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
             System.out.println("S FocessSocket: send packet: " + packet);
@@ -98,8 +78,7 @@ public class FocessSocket extends ASocket {
 
     @Override
     public void close() {
-        for (final Receiver receiver : this.receivers)
-            receiver.close();
+        super.close();
         try {
             this.server.close();
         } catch (final IOException ignored) {
