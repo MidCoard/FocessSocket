@@ -10,11 +10,18 @@ public class SidedConnectPacketCodec extends PacketCodec<SidedConnectPacket> {
 
     @Override
     public SidedConnectPacket readPacket(final PacketPreCodec packetPreCodec) {
-        return new SidedConnectPacket(packetPreCodec.readString());
+        String name = packetPreCodec.readString();
+        boolean serverHeart = packetPreCodec.readBoolean();
+        boolean encrypt = packetPreCodec.readBoolean();
+        String key = packetPreCodec.tryReadString();
+        return new SidedConnectPacket(name, serverHeart, encrypt, key);
     }
 
     @Override
     public void writePacket(final SidedConnectPacket packet, final PacketPreCodec packetPreCodec) {
         packetPreCodec.writeString(packet.getName());
+        packetPreCodec.writeBoolean(packet.isServerHeart());
+        packetPreCodec.writeBoolean(packet.isEncrypt());
+        packetPreCodec.tryWriteString(packet.getKey());
     }
 }

@@ -25,7 +25,7 @@ public class FocessClientReceiver extends AClientReceiver {
             if (this.connected)
                 focessSocket.sendPacket(host, port, new HeartPacket(this.id, this.token, System.currentTimeMillis()));
             else
-                focessSocket.sendPacket(this.host, this.port, new ConnectPacket(localhost, focessSocket.getLocalPort(), name, serverHeart, encrypt, ""));
+                focessSocket.sendPacket(this.host, this.port, new ConnectPacket(localhost, focessSocket.getLocalPort(), name, serverHeart, encrypt, keypair.getPublicKey()));
         }, Duration.ZERO, Duration.ofSeconds(2));
     }
 
@@ -57,7 +57,7 @@ public class FocessClientReceiver extends AClientReceiver {
         if (ASocket.isDebug())
             System.out.println("SC FocessSocket: accept client " + this.name + " disconnect from " + this.host + ":" + this.port);
         this.connected = false;
-        this.focessSocket.sendPacket(this.host, this.port, new ConnectPacket(this.localhost, this.focessSocket.getLocalPort(), this.name));
+        this.focessSocket.sendPacket(this.host, this.port, new ConnectPacket(this.localhost, this.focessSocket.getLocalPort(), this.name, this.serverHeart, this.encrypt, this.keypair.getPublicKey()));
     }
 
     @PacketHandler

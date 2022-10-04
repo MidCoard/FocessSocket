@@ -32,29 +32,6 @@ public class ConnectPacket extends Packet {
      * @param host the client host
      * @param port the client port
      * @param name the client name
-     */
-    public ConnectPacket(final String host, final int port, final String name) {
-        this(host, port, name, false, false, null);
-    }
-
-    /**
-     * Constructs a ConnectPacket
-     *
-     * @param host the client host
-     * @param port the client port
-     * @param name the client name
-     * @param serverHeart whether the server need to send heart packet
-     */
-    public ConnectPacket(String host, int port, String name, boolean serverHeart) {
-        this(host, port, name, serverHeart, false, null);
-    }
-
-    /**
-     * Constructs a ConnectPacket
-     *
-     * @param host the client host
-     * @param port the client port
-     * @param name the client name
      * @param serverHeart whether the server need to send heart packet
      * @param encrypt whether the server/client need to encrypt the packet
      * @param key the key to encrypt the packet

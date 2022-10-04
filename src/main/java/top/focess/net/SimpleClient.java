@@ -14,10 +14,6 @@ public class SimpleClient implements Client {
     private final boolean encrypt;
     private final String key;
 
-    public SimpleClient(final String host, final int port, final int id, final String name, final String token) {
-        this(host, port, id, name, token, false, false, null);
-    }
-
     public SimpleClient(final String host, final int port, final int id, final String name, final String token, boolean serverHeart, boolean encrypt, String key) {
         this.host = host;
         this.port = port;
@@ -27,10 +23,6 @@ public class SimpleClient implements Client {
         this.serverHeart = serverHeart;
         this.encrypt = encrypt;
         this.key = key;
-    }
-
-    public SimpleClient(final int id, final String name, final String token) {
-        this(null, -1, id, name, token);
     }
 
     public SimpleClient(final int id, final String name, final String token, boolean serverHeart, boolean encrypt, String key) {

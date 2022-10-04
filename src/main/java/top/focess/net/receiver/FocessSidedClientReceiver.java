@@ -20,14 +20,14 @@ public class FocessSidedClientReceiver extends AClientReceiver {
     private final Scheduler scheduler = new FocessScheduler("FocessSidedClientReceiver");
     private final Queue<Packet> packets = Queues.newConcurrentLinkedQueue();
 
-    public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket focessSidedClientSocket, final String name) {
-        super(focessSidedClientSocket.getHost(), focessSidedClientSocket.getPort(), name);
+    public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket focessSidedClientSocket, final String name, final boolean serverHeart, final boolean encrypt) {
+        super(focessSidedClientSocket.getHost(), focessSidedClientSocket.getPort(), name, serverHeart, encrypt);
         this.focessSidedClientSocket = focessSidedClientSocket;
         this.scheduler.runTimer(() -> {
             if (this.connected)
                 this.packets.offer(new HeartPacket(this.id, this.token, System.currentTimeMillis()));
             else
-                focessSidedClientSocket.sendPacket(new SidedConnectPacket(name));
+                focessSidedClientSocket.sendPacket(new SidedConnectPacket(name, serverHeart, encrypt, keypair.getPublicKey()));
         }, Duration.ZERO, Duration.ofSeconds(2));
         this.scheduler.runTimer(() -> {
             if (this.connected) {
@@ -68,7 +68,7 @@ public class FocessSidedClientReceiver extends AClientReceiver {
         if (ASocket.isDebug())
             System.out.println("PC FocessSocket: accept client " + this.name + " disconnect");
         this.connected = false;
-        this.focessSidedClientSocket.sendPacket(new SidedConnectPacket(this.name));
+        this.focessSidedClientSocket.sendPacket(new SidedConnectPacket(this.name, this.serverHeart, this.encrypt, this.keypair.getPublicKey()));
     }
 
     @PacketHandler

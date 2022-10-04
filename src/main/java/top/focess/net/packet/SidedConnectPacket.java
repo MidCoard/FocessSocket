@@ -10,14 +10,20 @@ public class SidedConnectPacket extends Packet {
      * The client name
      */
     private final String name;
+    private final boolean serverHeart;
+    private final boolean encrypt;
+    private final String key;
 
     /**
      * Constructs a SidedConnectPacket
      *
      * @param name the client name
      */
-    public SidedConnectPacket(final String name) {
+    public SidedConnectPacket(final String name, final boolean serverHeart, final boolean encrypt, final String key) {
         this.name = name;
+        this.serverHeart = serverHeart;
+        this.encrypt = encrypt;
+        this.key = key;
     }
 
     public String getName() {
@@ -27,5 +33,17 @@ public class SidedConnectPacket extends Packet {
     @Override
     public int getId() {
         return PACKET_ID;
+    }
+
+    public boolean isServerHeart() {
+        return serverHeart;
+    }
+
+    public boolean isEncrypt() {
+        return encrypt;
+    }
+
+    public String getKey() {
+        return key;
     }
 }

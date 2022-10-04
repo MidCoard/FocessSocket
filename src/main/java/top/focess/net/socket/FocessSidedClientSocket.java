@@ -17,10 +17,10 @@ public class FocessSidedClientSocket extends ASocket {
     private final String host;
     private final int port;
 
-    public FocessSidedClientSocket(final String host, final int port, String name) {
+    public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
         this.host = host;
         this.port = port;
-        super.registerReceiver(new FocessSidedClientReceiver(this, name));
+        super.registerReceiver(new FocessSidedClientReceiver(this, name, serverHeart, encrypt));
     }
 
     public String getHost() {

@@ -1,7 +1,7 @@
 package top.focess.net.packet;
 
 /**
- * The class indicates that this packet is for client side.
+ * The class indicates that this packet is from client side.
  */
 public abstract class ClientPacket extends Packet {
 

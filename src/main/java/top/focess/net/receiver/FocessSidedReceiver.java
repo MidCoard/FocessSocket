@@ -32,7 +32,7 @@ public class FocessSidedReceiver extends DefaultServerReceiver {
                     System.out.println("P FocessSocket: server reject client " + packet.getName() + " connect because of name conflict");
                 return null;
             }
-        final SimpleClient simpleClient = new SimpleClient(this.defaultClientId++, packet.getName(), generateToken());
+        final SimpleClient simpleClient = new SimpleClient(this.defaultClientId++, packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())

@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.net.PackHandler;
 import top.focess.net.packet.Packet;
+import top.focess.util.RSA;
+import top.focess.util.RSAKeypair;
 
 import java.util.List;
 import java.util.Map;
@@ -14,13 +16,13 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected final int port;
     protected final String name;
     protected final Map<Class<?>, List<PackHandler>> packHandlers = Maps.newConcurrentMap();
-    private final boolean serverHeart;
-    private final boolean encrypt;
+    protected final boolean serverHeart;
+    protected final boolean encrypt;
     protected String token;
     protected int id;
     protected volatile boolean connected;
 
-    private final Map<String, String> keypair;
+    protected final RSAKeypair keypair;
 
     public AClientReceiver(final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         this.host = host;
@@ -29,7 +31,8 @@ public abstract class AClientReceiver implements ClientReceiver {
         this.serverHeart = serverHeart;
         this.encrypt = encrypt;
         if (this.encrypt)
-            keypair =
+            keypair = RSA.genRSAKeypair();
+        else keypair = new RSAKeypair(null, null);
     }
 
     @Override

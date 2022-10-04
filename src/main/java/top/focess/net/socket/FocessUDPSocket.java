@@ -41,7 +41,7 @@ public class FocessUDPSocket extends ASocket implements SendableSocket {
                     if (packet != null) {
                         if (packet instanceof SidedConnectPacket) {
                             final String name = ((SidedConnectPacket) packet).getName();
-                            packet = new ConnectPacket(this.packet.getAddress().getHostName(), this.packet.getPort(), name);
+                            packet = new ConnectPacket(this.packet.getAddress().getHostName(), this.packet.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());
                         }
                         for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
                             final Method method = pair.getValue();
