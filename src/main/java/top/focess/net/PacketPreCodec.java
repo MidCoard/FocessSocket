@@ -267,4 +267,53 @@ public class PacketPreCodec {
     public void push(final byte[] buffer, final int length) {
         this.push(buffer, 0, length);
     }
+
+    /**
+     * Return the available size
+     * @return the available size
+     */
+    public int available() {
+        return this.data.size() - this.pointer;
+    }
+
+    /**
+     * Read a string
+     * @return the string read from precodec or null if the string is null
+     */
+    @Nullable
+    public String tryReadString() {
+        int pointer = this.pointer;
+        int length = this.readInt();
+        if (length == -1) return null;
+        else {
+            this.pointer = pointer;
+            return this.readString();
+        }
+    }
+
+    /**
+     * Write a string
+     * @param v the string
+     */
+    public void tryWriteString(@Nullable final String v) {
+        if (v != null)
+            this.writeString(v);
+        else this.writeInt(-1);
+    }
+
+    /**
+     * Write a boolean
+     * @param v the boolean
+     */
+    public void writeBoolean(boolean v) {
+        this.writeByte((byte) (v ? 1 : 0));
+    }
+
+    /**
+     * Read a boolean
+     * @return the boolean read from precodec
+     */
+    public boolean readBoolean() {
+        return this.readByte() == 1;
+    }
 }

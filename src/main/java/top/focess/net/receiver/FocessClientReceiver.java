@@ -17,16 +17,20 @@ public class FocessClientReceiver extends AClientReceiver {
     private final FocessSocket focessSocket;
     private final Scheduler scheduler = new FocessScheduler("FocessClientReceiver");
 
-    public FocessClientReceiver(final FocessSocket focessSocket, final String localhost, final String host, final int port, final String name) {
-        super(host, port, name);
+    public FocessClientReceiver(final FocessSocket focessSocket, final String localhost, final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
+        super(host, port, name, serverHeart, encrypt);
         this.localhost = localhost;
         this.focessSocket = focessSocket;
         this.scheduler.runTimer(() -> {
             if (this.connected)
                 focessSocket.sendPacket(host, port, new HeartPacket(this.id, this.token, System.currentTimeMillis()));
             else
-                focessSocket.sendPacket(this.host, this.port, new ConnectPacket(localhost, focessSocket.getLocalPort(), name));
+                focessSocket.sendPacket(this.host, this.port, new ConnectPacket(localhost, focessSocket.getLocalPort(), name, serverHeart, encrypt, ""));
         }, Duration.ZERO, Duration.ofSeconds(2));
+    }
+
+    public FocessClientReceiver(final FocessSocket focessSocket, final String localhost, final String host, final int port, final String name) {
+        this(focessSocket, localhost, host, port, name, false, false);
     }
 
     @PacketHandler

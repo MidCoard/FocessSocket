@@ -76,4 +76,16 @@ public interface ClientReceiver extends Receiver {
     default boolean isServerSide() {
         return false;
     }
+
+    /**
+     * Indicate whether the server need to send heart packet
+     * @return true if the server need to send heart packet, false otherwise
+     */
+    boolean isServerHeart();
+
+    /**
+     * Indicate whether the server/client need to encrypt the packet
+     * @return true if the server/client need to encrypt the packet, false otherwise
+     */
+    boolean isEncrypt();
 }

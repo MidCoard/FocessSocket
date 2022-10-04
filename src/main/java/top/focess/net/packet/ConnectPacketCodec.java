@@ -11,7 +11,10 @@ public class ConnectPacketCodec extends PacketCodec<ConnectPacket> {
         final String host = packetPreCodec.readString();
         final int port = packetPreCodec.readInt();
         final String name = packetPreCodec.readString();
-        return new ConnectPacket(host, port, name);
+        final boolean clientHeart = packetPreCodec.readBoolean();
+        final boolean encrypt = packetPreCodec.readBoolean();
+        final String key = packetPreCodec.tryReadString();
+        return new ConnectPacket(host, port, name, encrypt, clientHeart, key);
     }
 
     @Override
@@ -19,5 +22,8 @@ public class ConnectPacketCodec extends PacketCodec<ConnectPacket> {
         packetPreCodec.writeString(packet.getHost());
         packetPreCodec.writeInt(packet.getPort());
         packetPreCodec.writeString(packet.getName());
+        packetPreCodec.writeBoolean(packet.isServerHeart());
+        packetPreCodec.writeBoolean(packet.isEncrypt());
+        packetPreCodec.tryWriteString(packet.getKey());
     }
 }

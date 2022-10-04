@@ -14,14 +14,22 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected final int port;
     protected final String name;
     protected final Map<Class<?>, List<PackHandler>> packHandlers = Maps.newConcurrentMap();
+    private final boolean serverHeart;
+    private final boolean encrypt;
     protected String token;
     protected int id;
     protected volatile boolean connected;
 
-    public AClientReceiver(final String host, final int port, final String name) {
+    private final Map<String, String> keypair;
+
+    public AClientReceiver(final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         this.host = host;
         this.port = port;
         this.name = name;
+        this.serverHeart = serverHeart;
+        this.encrypt = encrypt;
+        if (this.encrypt)
+            keypair =
     }
 
     @Override
@@ -69,5 +77,15 @@ public abstract class AClientReceiver implements ClientReceiver {
     @Override
     public void unregister(PackHandler handler) {
         this.packHandlers.values().forEach(v -> v.remove(handler));
+    }
+
+    @Override
+    public boolean isServerHeart() {
+        return this.serverHeart;
+    }
+
+    @Override
+    public boolean isEncrypt() {
+        return this.encrypt;
     }
 }
