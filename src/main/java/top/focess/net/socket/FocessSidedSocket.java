@@ -3,17 +3,22 @@ package top.focess.net.socket;
 import com.google.common.collect.Lists;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
+import top.focess.net.SimpleClient;
+import top.focess.net.packet.ClientPacket;
 import top.focess.net.packet.Packet;
+import top.focess.net.packet.ServerPacket;
 import top.focess.net.receiver.FocessSidedReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.net.receiver.ServerReceiver;
 import top.focess.util.Pair;
+import top.focess.util.RSA;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
 
 public class FocessSidedSocket extends ASocket {
 
@@ -38,11 +43,24 @@ public class FocessSidedSocket extends ASocket {
                     int length;
                     while ((length = inputStream.read(buffer)) != -1)
                         packetPreCodec.push(buffer, length);
+                    int packetId = packetPreCodec.readInt();
+                    if (packetId == -1) {
+                        SimpleClient client = this.getReceiver().getClient(packetPreCodec.readInt());
+                        String encryptedData = packetPreCodec.readString();
+                        if (client == null || !client.isEncrypt()) {
+                            socket.shutdownOutput();
+                            continue;
+                        }
+                        String data = RSA.decryptRSA(encryptedData, client.getPrivateKey());
+                        packetPreCodec.clear();
+                        packetPreCodec.push(data.getBytes(StandardCharsets.UTF_8));
+                    }
+                    packetPreCodec.reset();
                     final Packet packet = packetPreCodec.readPacket();
                     if (isDebug())
                         System.out.println("P FocessSocket: receive packet: " + packet);
                     final OutputStream outputStream = socket.getOutputStream();
-                    if (packet != null)
+                    if (packet instanceof ClientPacket)
                         for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
                             final Method method = pair.getValue();
                             try {
@@ -50,18 +68,20 @@ public class FocessSidedSocket extends ASocket {
                                 final Object o = method.invoke(pair.getKey(), packet);
                                 if (isDebug())
                                     System.out.println("P FocessSocket: send packet: " + o);
-                                if (o != null) {
+                                if (o instanceof ServerPacket) {
                                     final PacketPreCodec handler = new PacketPreCodec();
                                     handler.writePacket((Packet) o);
-                                    outputStream.write(handler.getBytes());
+                                    if (this.getReceiver().getClient(((ClientPacket) packet).getClientId()).isEncrypt())
+                                        outputStream.write(RSA.encryptRSA(new String(handler.getBytes(), StandardCharsets.UTF_8), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getPublicKey()).getBytes(StandardCharsets.UTF_8));
+                                    else
+                                        outputStream.write(handler.getBytes());
                                     outputStream.flush();
                                 }
                             } catch (final Exception ignored) {
-                                ignored.printStackTrace();
                             }
                         }
                     socket.shutdownOutput();
-                } catch (final IOException e) {
+                } catch (final Exception e) {
                     if (this.server.isClosed())
                         return;
                 }
@@ -89,6 +109,7 @@ public class FocessSidedSocket extends ASocket {
     }
 
     public ServerReceiver getReceiver() {
-        return (ServerReceiver) this.receivers.get(0);
+        return (ServerReceiver) super.getReceiver();
     }
+
 }

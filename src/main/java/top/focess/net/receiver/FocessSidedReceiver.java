@@ -37,7 +37,7 @@ public class FocessSidedReceiver extends DefaultServerReceiver {
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())
             System.out.println("P FocessSocket: server accept client " + packet.getName() + " connect");
-        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken());
+        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey());
     }
 
     @Nullable

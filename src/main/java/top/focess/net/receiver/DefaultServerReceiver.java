@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.DisconnectPacket;
-import top.focess.net.packet.DisconnectedPacket;
 import top.focess.net.packet.Packet;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.Socket;
@@ -17,7 +16,7 @@ public abstract class DefaultServerReceiver extends AServerReceiver {
     }
 
     @PacketHandler
-    public Packet onDisconnect(@NotNull final DisconnectPacket packet) {
+    public void onDisconnect(@NotNull final DisconnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " disconnect");
         if (this.clientInfos.get(packet.getClientId()) != null) {
@@ -25,18 +24,14 @@ public abstract class DefaultServerReceiver extends AServerReceiver {
             if (simpleClient.getToken().equals(packet.getToken())) {
                 if (ASocket.isDebug())
                     System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " disconnect");
-                return this.disconnect(packet.getClientId());
+                this.disconnect(packet.getClientId());
             } else if (ASocket.isDebug())
                 System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of token conflict");
         } else if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
-        return null;
     }
 
-    @NotNull
-    @Contract("_ -> new")
-    public DisconnectedPacket disconnect(final int clientId) {
+    public void disconnect(final int clientId) {
         this.clientInfos.remove(clientId);
-        return new DisconnectedPacket();
     }
 }

@@ -154,6 +154,11 @@ public abstract class AServerReceiver implements ServerReceiver {
         if (this.socket instanceof SendableSocket)
             for (final SimpleClient simpleClient : this.clientInfos.values())
                 if (simpleClient.getName().equals(client))
-                    ((SendableSocket) this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+                    ((SendableSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+    }
+
+    @Override
+    public SimpleClient getClient(int id) {
+        return this.clientInfos.get(id);
     }
 }

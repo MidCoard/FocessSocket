@@ -6,7 +6,6 @@ import top.focess.net.SimpleClient;
 import top.focess.net.packet.ConnectPacket;
 import top.focess.net.packet.ConnectedPacket;
 import top.focess.net.packet.DisconnectPacket;
-import top.focess.net.packet.DisconnectedPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessSocket;
 import top.focess.net.socket.SendableSocket;
@@ -34,7 +33,7 @@ public class FocessReceiver extends AServerReceiver {
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())
             System.out.println("S FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
-        ((SendableSocket) this.socket).sendPacket(packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken()));
+        ((SendableSocket) this.socket).sendServerPacket(simpleClient, packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
     }
 
     @PacketHandler
@@ -53,10 +52,7 @@ public class FocessReceiver extends AServerReceiver {
             System.out.println("S FocessSocket: server reject client " + packet.getClientId() + " disconnect because of client not exist");
     }
 
-    public DisconnectedPacket disconnect(final int clientId) {
-        final SimpleClient simpleClient = this.clientInfos.remove(clientId);
-        if (simpleClient != null)
-            ((SendableSocket) this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new DisconnectedPacket());
-        return null;
+    public void disconnect(final int clientId) {
+        this.clientInfos.remove(clientId);
     }
 }

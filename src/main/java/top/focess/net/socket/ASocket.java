@@ -10,6 +10,7 @@ import top.focess.util.Pair;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,10 @@ public abstract class ASocket implements Socket {
 
     @Override
     public void registerReceiver(final Receiver receiver) {
+        if (this.receivers.size() > 0)
+            throw new UnsupportedOperationException();
         this.receivers.add(receiver);
-        for (final Method method : receiver.getClass().getDeclaredMethods())
+        for (final Method method : getAllMethods(receiver.getClass()))
             if (method.getAnnotation(PacketHandler.class) != null)
                 if (method.getParameterTypes().length == 1 && (method.getReturnType().equals(Void.TYPE) || Packet.class.isAssignableFrom(method.getReturnType()))) {
                     final Class<?> packetClass = method.getParameterTypes()[0];
@@ -50,6 +53,15 @@ public abstract class ASocket implements Socket {
                         }
                     }
                 }
+    }
+
+    private static List<Method> getAllMethods(Class<?> c) {
+        List<Method> methods = Lists.newArrayList();
+        while (c != null) {
+            Collections.addAll(methods, c.getDeclaredMethods());
+            c = c.getSuperclass();
+        }
+        return methods;
     }
 
     @Override
@@ -74,12 +86,18 @@ public abstract class ASocket implements Socket {
     }
 
     @Override
-    public boolean containsClientSide() {
+    public boolean isClientSide() {
         return this.receivers.stream().anyMatch(Receiver::isClientSide);
     }
 
     @Override
-    public boolean containsServerSide() {
+    public boolean isServerSide() {
         return this.receivers.stream().anyMatch(Receiver::isServerSide);
+    }
+
+    public Receiver getReceiver() {
+        if (this.receivers.isEmpty())
+            return null;
+        return this.receivers.get(0);
     }
 }

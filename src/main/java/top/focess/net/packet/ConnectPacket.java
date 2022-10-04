@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Used to connect to the server.
  */
-public class ConnectPacket extends Packet {
+public class ConnectPacket extends ClientPacket {
 
     public static final int PACKET_ID = 3;
     /**
@@ -37,6 +37,7 @@ public class ConnectPacket extends Packet {
      * @param key the key to encrypt the packet
      */
     public ConnectPacket(String host, int port, String name,boolean serverHeart, boolean encrypt,@Nullable String key) {
+        super(-1, null);
         this.host = host;
         this.port = port;
         this.name = name;

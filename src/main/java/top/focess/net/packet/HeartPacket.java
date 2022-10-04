@@ -1,16 +1,12 @@
 package top.focess.net.packet;
 
 /**
- * Used to tell server/client the connection is not lost.
+ * Used to tell server the connection is not lost.
  */
-public class HeartPacket extends Packet {
+public class HeartPacket extends ClientPacket {
 
     public static final int PACKET_ID = 2;
     private final long time;
-
-    private final int clientId;
-    private final String token;
-
     /**
      * Constructs a HeartPacket
      *
@@ -19,8 +15,7 @@ public class HeartPacket extends Packet {
      * @param time     the client time
      */
     public HeartPacket(final int clientId, final String token, final long time) {
-        this.clientId = clientId;
-        this.token = token;
+        super(clientId, token);
         this.time = time;
     }
 
@@ -33,11 +28,4 @@ public class HeartPacket extends Packet {
         return this.time;
     }
 
-    public int getClientId() {
-        return clientId;
-    }
-
-    public String getToken() {
-        return token;
-    }
 }

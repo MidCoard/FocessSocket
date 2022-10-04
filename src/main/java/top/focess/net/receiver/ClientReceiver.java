@@ -88,4 +88,21 @@ public interface ClientReceiver extends Receiver {
      * @return true if the server/client need to encrypt the packet, false otherwise
      */
     boolean isEncrypt();
+
+    /**
+     * Get the private key to decrypt the packet
+     * @return the private key to decrypt the packet
+     */
+    String getPrivateKey();
+
+    /**
+     * Get the public key to encrypt the packet
+     * @return the public key to encrypt the packet
+     */
+    String getKey();
+
+    /**
+     * Disconnect the client
+     */
+    void disconnect();
 }

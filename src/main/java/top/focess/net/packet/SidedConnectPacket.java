@@ -3,7 +3,7 @@ package top.focess.net.packet;
 /**
  * Used to connect to the server.
  */
-public class SidedConnectPacket extends Packet {
+public class SidedConnectPacket extends ClientPacket {
 
     public static final int PACKET_ID = 9;
     /**
@@ -20,6 +20,7 @@ public class SidedConnectPacket extends Packet {
      * @param name the client name
      */
     public SidedConnectPacket(final String name, final boolean serverHeart, final boolean encrypt, final String key) {
+        super(-1, null);
         this.name = name;
         this.serverHeart = serverHeart;
         this.encrypt = encrypt;

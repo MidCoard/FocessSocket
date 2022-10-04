@@ -16,14 +16,21 @@ public class ConnectedPacket extends ServerPacket {
     private final String token;
 
     /**
+     * The public key
+     */
+    private final String key;
+
+    /**
      * Constructs a ConnectedPacket
      *
      * @param clientId the client id
      * @param token    the token
+     * @param key      the  public key
      */
-    public ConnectedPacket(final int clientId, final String token) {
+    public ConnectedPacket(final int clientId, final String token, final String key) {
         this.clientId = clientId;
         this.token = token;
+        this.key = key;
     }
 
     @Override
@@ -37,5 +44,9 @@ public class ConnectedPacket extends ServerPacket {
 
     public String getToken() {
         return this.token;
+    }
+
+    public String getKey() {
+        return key;
     }
 }

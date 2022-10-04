@@ -24,7 +24,6 @@ public class PacketPreCodec {
         register(ConnectPacket.PACKET_ID, new ConnectPacketCodec());
         register(ConnectedPacket.PACKET_ID, new ConnectedPacketCodec());
         register(DisconnectPacket.PACKET_ID, new DisconnectPacketCodec());
-        register(DisconnectedPacket.PACKET_ID, new DisconnectedPacketCodec());
         register(ClientPackPacket.PACKET_ID, new ClientPackPacketCodec());
         register(ServerPackPacket.PACKET_ID, new ServerPackPacketCodec());
         register(SidedConnectPacket.PACKET_ID, new SidedConnectPacketCodec());
@@ -251,6 +250,7 @@ public class PacketPreCodec {
      * @param offset the offset of the data
      * @param length the length of the data
      * @see #push(byte[], int)
+     * @see #push(byte[])
      */
     public void push(final byte[] buffer, final int offset, final int length) {
         for (int i = offset; i < length; i++)
@@ -263,6 +263,7 @@ public class PacketPreCodec {
      * @param buffer the data
      * @param length the length of the data
      * @see #push(byte[], int, int)
+     * @see #push(byte[])
      */
     public void push(final byte[] buffer, final int length) {
         this.push(buffer, 0, length);
@@ -315,5 +316,30 @@ public class PacketPreCodec {
      */
     public boolean readBoolean() {
         return this.readByte() == 1;
+    }
+
+    /**
+     * Clear the precodec
+     */
+    public void clear() {
+        this.data.clear();
+        this.pointer = 0;
+    }
+
+    /**
+     * Push the data to the precodec
+     * @param bytes the data
+     * @see #push(byte[], int, int)
+     * @see #push(byte[], int)
+     */
+    public void push(byte[] bytes) {
+        this.push(bytes, bytes.length);
+    }
+
+    /**
+     * Reset the pointer
+     */
+    public void reset() {
+        this.pointer = 0;
     }
 }

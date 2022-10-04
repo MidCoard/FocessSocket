@@ -1,16 +1,20 @@
 package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Bytes;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.FocessSidedClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
+import top.focess.util.RSA;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class FocessSidedClientSocket extends ASocket {
 
@@ -40,15 +44,30 @@ public class FocessSidedClientSocket extends ASocket {
                 return false;
             final java.net.Socket socket = new java.net.Socket(this.host, this.port);
             final OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(packetPreCodec.getBytes());
+            if (this.getReceiver().isEncrypt()) {
+                PacketPreCodec codec = new PacketPreCodec();
+                codec.writeInt(-1);
+                codec.writeInt(this.getReceiver().getClientId());
+                codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(),StandardCharsets.UTF_8),this.getReceiver().getKey()));
+                outputStream.write(codec.getBytes());
+            } else
+                outputStream.write(packetPreCodec.getBytes());
             outputStream.flush();
             socket.shutdownOutput();
             final InputStream inputStream = socket.getInputStream();
             final byte[] buffer = new byte[1024];
             int length;
             final PacketPreCodec codec = new PacketPreCodec();
-            while ((length = inputStream.read(buffer)) != -1)
-                codec.push(buffer, length);
+            if (!this.getReceiver().isEncrypt())
+                while ((length = inputStream.read(buffer)) != -1)
+                    codec.push(buffer, length);
+            else {
+                List<Byte> bytes = Lists.newArrayList();
+                while ((length = inputStream.read(buffer)) != -1)
+                    for (int i = 0; i < length; i++)
+                        bytes.add(buffer[i]);
+                codec.push(RSA.decryptRSA(new String (Bytes.toArray(bytes), StandardCharsets.UTF_8), this.getReceiver().getPrivateKey()).getBytes(StandardCharsets.UTF_8));
+            }
             final Packet p = codec.readPacket();
             if (isDebug())
                 System.out.println("PC FocessSocket: receive packet: " + p);
@@ -72,6 +91,6 @@ public class FocessSidedClientSocket extends ASocket {
     }
 
     public ClientReceiver getReceiver() {
-        return (ClientReceiver) this.receivers.get(0);
+        return (ClientReceiver) super.getReceiver();
     }
 }

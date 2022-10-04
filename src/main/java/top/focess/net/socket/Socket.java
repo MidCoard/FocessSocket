@@ -19,14 +19,14 @@ public interface Socket {
      *
      * @return true if it contains server side receiver, false otherwise
      */
-    boolean containsServerSide();
+    boolean isServerSide();
 
     /**
      * Indicate this socket contains client side receiver
      *
      * @return true if it contains client side receiver, false otherwise
      */
-    boolean containsClientSide();
+    boolean isClientSide();
 
     /**
      * Close the socket, which will close all the receivers

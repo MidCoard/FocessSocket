@@ -28,6 +28,6 @@ public class FocessUDPReceiver extends DefaultServerReceiver {
         final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId++, packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
-        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken());
+        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey());
     }
 }

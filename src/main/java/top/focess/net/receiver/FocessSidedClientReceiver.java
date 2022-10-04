@@ -56,19 +56,7 @@ public class FocessSidedClientReceiver extends AClientReceiver {
         this.token = packet.getToken();
         this.id = packet.getClientId();
         this.connected = true;
-    }
-
-    @PacketHandler
-    public void onDisconnected(final DisconnectedPacket packet) {
-        if (!this.connected) {
-            if (ASocket.isDebug())
-                System.out.println("PC FocessSocket: reject client " + this.name + " disconnect because of not connected");
-            return;
-        }
-        if (ASocket.isDebug())
-            System.out.println("PC FocessSocket: accept client " + this.name + " disconnect");
-        this.connected = false;
-        this.focessSidedClientSocket.sendPacket(new SidedConnectPacket(this.name, this.serverHeart, this.encrypt, this.keypair.getPublicKey()));
+        this.key = packet.getKey();
     }
 
     @PacketHandler

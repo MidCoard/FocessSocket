@@ -1,6 +1,8 @@
 package top.focess.net;
 
 import org.jetbrains.annotations.Nullable;
+import top.focess.util.RSA;
+import top.focess.util.RSAKeypair;
 
 public class SimpleClient implements Client {
 
@@ -14,6 +16,8 @@ public class SimpleClient implements Client {
     private final boolean encrypt;
     private final String key;
 
+    private final RSAKeypair keypair;
+
     public SimpleClient(final String host, final int port, final int id, final String name, final String token, boolean serverHeart, boolean encrypt, String key) {
         this.host = host;
         this.port = port;
@@ -23,6 +27,9 @@ public class SimpleClient implements Client {
         this.serverHeart = serverHeart;
         this.encrypt = encrypt;
         this.key = key;
+        if (encrypt)
+            keypair = RSA.genRSAKeypair();
+        else keypair = new RSAKeypair(null, null);
     }
 
     public SimpleClient(final int id, final String name, final String token, boolean serverHeart, boolean encrypt, String key) {
@@ -62,5 +69,13 @@ public class SimpleClient implements Client {
 
     public String getKey() {
         return key;
+    }
+
+    public String getPublicKey() {
+        return keypair.getPublicKey();
+    }
+
+    public String getPrivateKey() {
+        return keypair.getPrivateKey();
     }
 }

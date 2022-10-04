@@ -3,6 +3,7 @@ package top.focess.net.receiver;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.net.PackHandler;
+import top.focess.net.packet.DisconnectPacket;
 import top.focess.net.packet.Packet;
 import top.focess.util.RSA;
 import top.focess.util.RSAKeypair;
@@ -23,6 +24,8 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected volatile boolean connected;
 
     protected final RSAKeypair keypair;
+
+    protected String key;
 
     public AClientReceiver(final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         this.host = host;
@@ -90,5 +93,20 @@ public abstract class AClientReceiver implements ClientReceiver {
     @Override
     public boolean isEncrypt() {
         return this.encrypt;
+    }
+
+    @Override
+    public String getPrivateKey() {
+        return this.keypair.getPrivateKey();
+    }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public void disconnect() {
+        this.sendPacket(new DisconnectPacket(this.id, this.token));
     }
 }

@@ -9,6 +9,7 @@ import top.focess.net.SimpleClient;
 import top.focess.net.packet.ConnectPacket;
 import top.focess.net.packet.ConnectedPacket;
 import top.focess.net.packet.Packet;
+import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPSocket;
 import top.focess.net.socket.SendableSocket;
@@ -31,14 +32,14 @@ public class FocessUDPMultiReceiver extends DefaultServerReceiver implements Ser
         final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId++, packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
-        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken());
+        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey());
     }
 
     @Override
     public void sendPacket(final int id, final Packet packet) {
         final SimpleClient simpleClient = this.clientInfos.get(id);
         if (simpleClient != null)
-            ((SendableSocket) this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), packet);
+            ((SendableSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
     }
 
     @Override
