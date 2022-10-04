@@ -51,7 +51,7 @@ public class FocessClientReceiver extends AClientReceiver {
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("SC FocessSocket: accept client " + this.name + " disconnect from "  + this.host + ":" + this.port);
+            System.out.println("SC FocessSocket: accept client " + this.name + " disconnect from " + this.host + ":" + this.port);
         this.connected = false;
         this.focessSocket.sendPacket(this.host, this.port, new ConnectPacket(this.localhost, this.focessSocket.getLocalPort(), this.name));
     }

@@ -8,7 +8,6 @@ import top.focess.net.receiver.FocessSidedClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;

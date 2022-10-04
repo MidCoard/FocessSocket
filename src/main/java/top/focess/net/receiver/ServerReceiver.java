@@ -40,6 +40,7 @@ public interface ServerReceiver extends Receiver {
 
     /**
      * Disconnect the client
+     *
      * @param client the client name
      */
     void disconnect(String client);

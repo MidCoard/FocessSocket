@@ -2,7 +2,6 @@ package top.focess.net.receiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.focess.net.Client;
@@ -35,6 +34,18 @@ public abstract class AServerReceiver implements ServerReceiver {
     protected final Socket socket;
     protected int defaultClientId;
 
+    public AServerReceiver(Socket socket) {
+        this.socket = socket;
+        this.scheduler = new FocessScheduler("FocessServerSocket");
+        this.scheduler.runTimer(() -> {
+            for (final SimpleClient simpleClient : this.clientInfos.values()) {
+                final long time = this.lastHeart.getOrDefault(simpleClient.getId(), 0L);
+                if (System.currentTimeMillis() - time > 10 * 1000)
+                    this.clientInfos.remove(simpleClient.getId());
+            }
+        }, Duration.ZERO, Duration.ofSeconds(1));
+    }
+
     @NotNull
     protected static String generateToken() {
         final StringBuilder stringBuilder = new StringBuilder();
@@ -53,18 +64,6 @@ public abstract class AServerReceiver implements ServerReceiver {
             }
         }
         return stringBuilder.toString();
-    }
-
-    public AServerReceiver(Socket socket) {
-        this.socket = socket;
-        this.scheduler = new FocessScheduler("FocessServerSocket");
-        this.scheduler.runTimer(() -> {
-            for (final SimpleClient simpleClient : this.clientInfos.values()) {
-                final long time = this.lastHeart.getOrDefault(simpleClient.getId(), 0L);
-                if (System.currentTimeMillis() - time > 10 * 1000)
-                    this.clientInfos.remove(simpleClient.getId());
-            }
-        }, Duration.ZERO, Duration.ofSeconds(1));
     }
 
     @Override

@@ -6,7 +6,9 @@ import org.jetbrains.annotations.UnmodifiableView;
 import top.focess.net.Client;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.*;
+import top.focess.net.packet.ConnectPacket;
+import top.focess.net.packet.ConnectedPacket;
+import top.focess.net.packet.Packet;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPSocket;
 import top.focess.net.socket.SendableSocket;
@@ -36,7 +38,7 @@ public class FocessUDPMultiReceiver extends DefaultServerReceiver implements Ser
     public void sendPacket(final int id, final Packet packet) {
         final SimpleClient simpleClient = this.clientInfos.get(id);
         if (simpleClient != null)
-            ((SendableSocket)this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), packet);
+            ((SendableSocket) this.socket).sendPacket(Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), packet);
     }
 
     @Override
@@ -47,6 +49,5 @@ public class FocessUDPMultiReceiver extends DefaultServerReceiver implements Ser
                 ret.add(client);
         return Collections.unmodifiableList(ret);
     }
-
 
 }

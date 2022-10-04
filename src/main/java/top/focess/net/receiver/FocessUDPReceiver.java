@@ -1,17 +1,12 @@
 package top.focess.net.receiver;
 
-import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.*;
+import top.focess.net.packet.ConnectPacket;
+import top.focess.net.packet.ConnectedPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPSocket;
 import top.focess.net.socket.SendableSocket;
-import top.focess.scheduler.FocessScheduler;
-import top.focess.scheduler.Scheduler;
-
-import java.time.Duration;
-import java.util.Objects;
 
 public class FocessUDPReceiver extends DefaultServerReceiver {
 
@@ -34,7 +29,7 @@ public class FocessUDPReceiver extends DefaultServerReceiver {
         final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId++, packet.getName(), generateToken());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
-        ((SendableSocket)this.socket).sendPacket(packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken()));
+        ((SendableSocket) this.socket).sendPacket(packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken()));
     }
 
 }

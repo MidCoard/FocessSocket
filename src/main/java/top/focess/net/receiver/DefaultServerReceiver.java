@@ -10,7 +10,7 @@ import top.focess.net.packet.Packet;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.Socket;
 
-public abstract class DefaultServerReceiver extends AServerReceiver{
+public abstract class DefaultServerReceiver extends AServerReceiver {
 
     public DefaultServerReceiver(Socket socket) {
         super(socket);

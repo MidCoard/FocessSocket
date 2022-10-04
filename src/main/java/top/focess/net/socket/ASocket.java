@@ -16,6 +16,8 @@ import java.util.Map;
 public abstract class ASocket implements Socket {
 
     private static boolean debug = false;
+    protected final Map<Class<? extends Packet>, List<Pair<Receiver, Method>>> packetMethods = Maps.newConcurrentMap();
+    protected final List<Receiver> receivers = Lists.newArrayList();
 
     public static void enableDebug() {
         debug = true;
@@ -28,9 +30,6 @@ public abstract class ASocket implements Socket {
     public static boolean isDebug() {
         return debug;
     }
-
-    protected final Map<Class<? extends Packet>, List<Pair<Receiver, Method>>> packetMethods = Maps.newConcurrentMap();
-    protected final List<Receiver> receivers = Lists.newArrayList();
 
     @Override
     public void registerReceiver(final Receiver receiver) {

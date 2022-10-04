@@ -40,6 +40,7 @@ public interface Socket {
 
     /**
      * Unregister the receiver, which will close the receiver
+     *
      * @param receiver the receiver
      */
     void unregister(Receiver receiver);
