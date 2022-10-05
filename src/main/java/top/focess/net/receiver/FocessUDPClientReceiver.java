@@ -2,23 +2,26 @@ package top.focess.net.receiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import org.jetbrains.annotations.NotNull;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.*;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessSidedClientSocket;
+import top.focess.net.socket.FocessUDPClientSocket;
+import top.focess.net.socket.FocessUDPSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
 
 import java.time.Duration;
 import java.util.Queue;
 
-public class FocessSidedClientReceiver extends AClientReceiver {
-    private final Scheduler scheduler = new FocessScheduler("FocessSidedClientReceiver");
+public class FocessUDPClientReceiver extends AClientReceiver{
+
+
+    private final Scheduler scheduler = new FocessScheduler("FocessUDPClientReceiver");
+
     private final Queue<ClientPacket> packets = Queues.newConcurrentLinkedQueue();
 
-    public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket socket, final String name, final boolean serverHeart, final boolean encrypt) {
+    public FocessUDPClientReceiver(FocessUDPClientSocket socket, String name, boolean serverHeart, boolean encrypt) {
         super(socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
         this.scheduler.runTimer(() -> {
             if (this.connected)
@@ -28,17 +31,12 @@ public class FocessSidedClientReceiver extends AClientReceiver {
         }, Duration.ZERO, Duration.ofSeconds(2));
         this.scheduler.runTimer(() -> {
             if (this.connected) {
-                Packet packet = this.packets.poll();
+                ClientPacket packet = this.packets.poll();
                 if (packet == null)
                     packet = new WaitPacket(this.id, this.token);
                 socket.sendPacket(packet);
             }
         }, Duration.ZERO, Duration.ofMillis(100));
-    }
-
-    @Override
-    public void sendPacket(final Packet packet) {
-        this.packets.add(new ClientPackPacket(this.id, this.token, packet));
     }
 
     @PacketHandler
@@ -67,6 +65,11 @@ public class FocessSidedClientReceiver extends AClientReceiver {
             System.out.println("PC FocessSocket: accept client " + this.name + " receive packet");
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
             packHandler.handle(this.id, packet.getPacket());
+    }
+
+    @Override
+    public void sendPacket(Packet packet) {
+        this.packets.add(new ClientPackPacket(this.getClientId(), this.getClientToken(), packet));
     }
 
     @Override

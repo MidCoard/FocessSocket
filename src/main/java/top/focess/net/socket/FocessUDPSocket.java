@@ -1,24 +1,29 @@
 package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Bytes;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.*;
+import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.net.receiver.ServerReceiver;
 import top.focess.util.Pair;
 import top.focess.util.RSA;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-public class FocessUDPSocket extends ASocket implements SendableSocket {
+public class FocessUDPSocket extends ServerSocket implements SendableSocket {
 
     private final DatagramSocket socket;
     private final DatagramPacket packet;
@@ -87,8 +92,8 @@ public class FocessUDPSocket extends ASocket implements SendableSocket {
     }
 
     @Override
-    public void registerReceiver(final Receiver receiver) {
-        if (!(receiver instanceof ServerReceiver))
+    public void registerReceiver(Receiver receiver) {
+        if (receiver.isClientSide())
             throw new UnsupportedOperationException();
         super.registerReceiver(receiver);
     }
@@ -100,7 +105,7 @@ public class FocessUDPSocket extends ASocket implements SendableSocket {
     }
 
     public boolean sendClientPacket(final String host, final int port, final ClientPacket packet) {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public boolean sendServerPacket(SimpleClient client, final String host, final int port, final ServerPacket packet) {
@@ -125,8 +130,4 @@ public class FocessUDPSocket extends ASocket implements SendableSocket {
         return false;
     }
 
-    @Override
-    public ServerReceiver getReceiver() {
-        return (ServerReceiver)super.getReceiver();
-    }
 }

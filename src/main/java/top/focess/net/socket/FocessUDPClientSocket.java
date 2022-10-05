@@ -5,7 +5,7 @@ import com.google.common.primitives.Bytes;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 import top.focess.net.receiver.ClientReceiver;
-import top.focess.net.receiver.FocessSidedClientReceiver;
+import top.focess.net.receiver.FocessUDPClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
 import top.focess.util.RSA;
@@ -16,28 +16,28 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class FocessSidedClientSocket extends ClientSocket {
+public class FocessUDPClientSocket extends ClientSocket{
 
-    public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
+    public FocessUDPClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
         super(host, port);
-        super.registerReceiver(new FocessSidedClientReceiver(this, name, serverHeart, encrypt));
+        super.registerReceiver(new FocessUDPClientReceiver(this, name, serverHeart, encrypt));
     }
 
-
-    public <T extends Packet> boolean sendPacket(final T packet) {
+    public boolean sendPacket(Packet packet) {
         if (isDebug())
             System.out.println("PC FocessSocket: send packet: " + packet);
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         try {
             if (!packetPreCodec.writePacket(packet))
                 return false;
-            final java.net.Socket socket = new java.net.Socket(this.host, this.port);
+            ClientReceiver clientReceiver = (ClientReceiver) this.getReceiver();
+            final java.net.Socket socket = new java.net.Socket(clientReceiver.getHost(), clientReceiver.getPort());
             final OutputStream outputStream = socket.getOutputStream();
-            if (this.getReceiver().isEncrypt()) {
+            if (clientReceiver.isEncrypt()) {
                 PacketPreCodec codec = new PacketPreCodec();
                 codec.writeInt(-1);
-                codec.writeInt(this.getReceiver().getClientId());
-                codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(),StandardCharsets.UTF_8),this.getReceiver().getKey()));
+                codec.writeInt(clientReceiver.getClientId());
+                codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(), StandardCharsets.UTF_8),clientReceiver.getKey()));
                 outputStream.write(codec.getBytes());
             } else
                 outputStream.write(packetPreCodec.getBytes());
@@ -47,7 +47,7 @@ public class FocessSidedClientSocket extends ClientSocket {
             final byte[] buffer = new byte[1024];
             int length;
             final PacketPreCodec codec = new PacketPreCodec();
-            if (!this.getReceiver().isEncrypt())
+            if (!clientReceiver.isEncrypt())
                 while ((length = inputStream.read(buffer)) != -1)
                     codec.push(buffer, length);
             else {
@@ -74,9 +74,4 @@ public class FocessSidedClientSocket extends ClientSocket {
             return false;
         }
     }
-
-    public void registerReceiver(final Receiver receiver) {
-        throw new UnsupportedOperationException();
-    }
-
 }

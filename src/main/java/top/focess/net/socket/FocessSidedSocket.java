@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
 
-public class FocessSidedSocket extends ASocket {
+public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
 
     private final int localPort;
     private final ServerSocket server;
@@ -106,10 +106,6 @@ public class FocessSidedSocket extends ASocket {
 
     public int getLocalPort() {
         return this.localPort;
-    }
-
-    public ServerReceiver getReceiver() {
-        return (ServerReceiver) super.getReceiver();
     }
 
 }
