@@ -12,14 +12,11 @@ import top.focess.scheduler.Scheduler;
 import java.time.Duration;
 
 public class FocessClientReceiver extends AClientReceiver {
-
-    private final String localhost;
     private final FocessSocket focessSocket;
     private final Scheduler scheduler = new FocessScheduler("FocessClientReceiver");
 
     public FocessClientReceiver(final FocessSocket focessSocket, final String localhost, final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         super(host, port, name, serverHeart, encrypt);
-        this.localhost = localhost;
         this.focessSocket = focessSocket;
         this.scheduler.runTimer(() -> {
             if (this.connected)

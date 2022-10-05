@@ -207,6 +207,14 @@ public class PacketPreCodec {
     }
 
     /**
+     * Get the length of the packet
+     * @return the length of the packet
+     */
+    public int length() {
+        return this.data.size();
+    }
+
+    /**
      * Read a packet
      *
      * @return the packet read from precodec

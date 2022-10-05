@@ -95,6 +95,8 @@ public class FocessSocket extends ASocket implements SendableSocket {
     public boolean sendClientPacket(final String targetHost, final int targetPort, final ClientPacket packet) {
         if (this.isServerSide())
             return false;
+        if (!((ClientReceiver) this.getReceiver()).isConnected())
+            return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
             System.out.println("S FocessSocket: send packet: " + packet);

@@ -75,7 +75,7 @@ public class FocessUDPSocket extends ServerSocket implements SendableSocket {
                                         byte[] bytes = RSA.encryptRSA(new String(handler.getBytes(), StandardCharsets.UTF_8), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getPublicKey()).getBytes(StandardCharsets.UTF_8);
                                         sendPacket = new DatagramPacket(bytes,bytes.length, this.packet.getSocketAddress());
                                     } else
-                                        sendPacket = new DatagramPacket(handler.getBytes(), handler.getBytes().length, this.packet.getSocketAddress());
+                                        sendPacket = new DatagramPacket(handler.getBytes(), handler.length(), this.packet.getSocketAddress());
                                     this.socket.send(sendPacket);
                                 }
                             } catch (final Exception ignored) {
@@ -119,7 +119,7 @@ public class FocessUDPSocket extends ServerSocket implements SendableSocket {
                 sendPacket = new DatagramPacket(encryptedData.getBytes(StandardCharsets.UTF_8), encryptedData.getBytes(StandardCharsets.UTF_8).length, new InetSocketAddress(host, port));
             }
             else
-                sendPacket = new DatagramPacket(handler.getBytes(), handler.getBytes().length, new InetSocketAddress(host, port));
+                sendPacket = new DatagramPacket(handler.getBytes(), handler.length(), new InetSocketAddress(host, port));
             try {
                 this.socket.send(sendPacket);
                 return true;
