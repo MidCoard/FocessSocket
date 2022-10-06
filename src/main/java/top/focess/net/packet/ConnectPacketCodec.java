@@ -11,10 +11,10 @@ public class ConnectPacketCodec extends PacketCodec<ConnectPacket> {
         final String host = packetPreCodec.readString();
         final int port = packetPreCodec.readInt();
         final String name = packetPreCodec.readString();
-        final boolean clientHeart = packetPreCodec.readBoolean();
+        final boolean serverHeart = packetPreCodec.readBoolean();
         final boolean encrypt = packetPreCodec.readBoolean();
         final String key = packetPreCodec.tryReadString();
-        return new ConnectPacket(host, port, name, encrypt, clientHeart, key);
+        return new ConnectPacket(host, port, name, serverHeart, encrypt, key);
     }
 
     @Override

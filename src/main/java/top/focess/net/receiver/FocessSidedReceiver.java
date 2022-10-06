@@ -15,7 +15,7 @@ import java.util.Queue;
 
 public class FocessSidedReceiver extends AServerReceiver {
 
-    private final Map<String, Queue<Packet>> packets = Maps.newConcurrentMap();
+    private final Map<String, Queue<ServerPacket>> packets = Maps.newConcurrentMap();
 
     public FocessSidedReceiver(Socket socket) {
         super(socket);
@@ -90,6 +90,16 @@ public class FocessSidedReceiver extends AServerReceiver {
             if (v == null)
                 v = Queues.newConcurrentLinkedQueue();
             v.offer(new ServerPackPacket(packet));
+            return v;
+        });
+    }
+
+    @Override
+    public void sendPacket(int id, ServerPacket packet) {
+        this.packets.compute(this.clientInfos.get(id).getName(), (k, v) -> {
+            if (v == null)
+                v = Queues.newConcurrentLinkedQueue();
+            v.offer(packet);
             return v;
         });
     }

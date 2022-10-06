@@ -17,8 +17,11 @@ import java.util.Queue;
 public class FocessSidedClientReceiver extends AClientReceiver {
     private final Queue<ClientPacket> packets = Queues.newConcurrentLinkedQueue();
 
+    private final FocessSidedClientSocket socket;
+
     public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket socket, final String name, final boolean serverHeart, final boolean encrypt) {
         super(new FocessScheduler("FocessSidedClientReceiver"), socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
+        this.socket = socket;
         this.scheduler.runTimer(() -> {
             if (this.connected)
                 this.packets.offer(new HeartPacket(this.id, this.token, System.currentTimeMillis()));
@@ -45,5 +48,11 @@ public class FocessSidedClientReceiver extends AClientReceiver {
         this.scheduler.close();
         this.packets.clear();
         this.unregisterAll();
+    }
+
+    @Override
+    public void disconnect() {
+        this.socket.sendPacket(new DisconnectPacket(this.id, this.token));
+        super.disconnect();
     }
 }

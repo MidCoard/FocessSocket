@@ -3,6 +3,7 @@ package top.focess.net.receiver;
 import top.focess.net.packet.*;
 import top.focess.net.socket.BothSideSocket;
 import top.focess.net.socket.FocessSocket;
+import top.focess.net.socket.FocessUDPSocket;
 import top.focess.scheduler.FocessScheduler;
 
 import java.time.Duration;
@@ -34,5 +35,11 @@ public class FocessClientReceiver extends AClientReceiver {
     public void close() {
         this.scheduler.close();
         this.unregisterAll();
+    }
+
+    @Override
+    public void disconnect() {
+        this.socket.sendClientPacket(this.host, this.port, new DisconnectPacket(this.id, this.token));
+        super.disconnect();
     }
 }

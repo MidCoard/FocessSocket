@@ -56,4 +56,9 @@ public class FocessReceiver extends AServerReceiver {
     public void sendPacket(int id, Packet packet) {
         ((BothSideSocket) this.socket).sendServerPacket(this.getClient(id), new ServerPackPacket(packet));
     }
+
+    @Override
+    public void sendPacket(int id, ServerPacket packet) {
+        ((BothSideSocket) this.socket).sendServerPacket(this.getClient(id), packet);
+    }
 }

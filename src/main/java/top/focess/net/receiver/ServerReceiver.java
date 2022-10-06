@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import top.focess.net.PackHandler;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.Packet;
+import top.focess.net.packet.ServerPacket;
 
 import java.util.List;
 
@@ -94,4 +95,12 @@ public interface ServerReceiver extends Receiver {
      * @param packet the packet
      */
     void sendPacket(int id, Packet packet);
+
+    /**
+     * Send ServerPacket to the special client
+     *
+     * @param id the client id
+     * @param packet the packet
+     */
+     void sendPacket(int id, ServerPacket packet);
 }

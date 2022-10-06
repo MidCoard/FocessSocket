@@ -120,7 +120,6 @@ public abstract class AClientReceiver implements ClientReceiver {
 
     @Override
     public void disconnect() {
-        this.sendPacket(new DisconnectPacket(this.id, this.token));
         this.connected = false;
     }
 

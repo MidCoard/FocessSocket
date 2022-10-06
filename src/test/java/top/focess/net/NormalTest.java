@@ -127,4 +127,38 @@ public class NormalTest {
         socket.close();
         client.close();
     }
+
+    @Test
+    public void testClientReconnect0() throws Exception {
+        FocessSocket socket = new FocessSocket(1234);
+        socket.registerReceiver(new FocessReceiver(socket));
+        FocessSocket client = new FocessSocket();
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", 1234, "hello"));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        Assertions.assertTrue(clientReceiver.waitConnected(5, TimeUnit.SECONDS));
+        Assertions.assertNotNull(((ServerReceiver) socket.getReceiver()).getClient("hello"));
+        clientReceiver.disconnect();
+        socket.close();
+        FocessSocket socket1 = new FocessSocket(1234);
+        socket1.registerReceiver(new FocessReceiver(socket1));
+        Thread.sleep(5000);
+        Assertions.assertNull(((ServerReceiver) socket1.getReceiver()).getClient("hello"));
+    }
+
+    @Test
+    public void testClientReconnect1() throws Exception {
+        FocessSocket socket = new FocessSocket(1234);
+        socket.registerReceiver(new FocessReceiver(socket));
+        FocessSocket client = new FocessSocket();
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", 1234, "hello", true, false));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        Assertions.assertTrue(clientReceiver.waitConnected(5, TimeUnit.SECONDS));
+        Assertions.assertNotNull(((ServerReceiver) socket.getReceiver()).getClient("hello"));
+        clientReceiver.disconnect();
+        socket.close();
+        FocessSocket socket1 = new FocessSocket(1234);
+        socket1.registerReceiver(new FocessReceiver(socket1));
+        Thread.sleep(15000);
+        Assertions.assertNull(((ServerReceiver) socket1.getReceiver()).getClient("hello"));
+    }
 }
