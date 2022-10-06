@@ -15,11 +15,10 @@ import java.time.Duration;
 import java.util.Queue;
 
 public class FocessSidedClientReceiver extends AClientReceiver {
-    private final Scheduler scheduler = new FocessScheduler("FocessSidedClientReceiver");
     private final Queue<ClientPacket> packets = Queues.newConcurrentLinkedQueue();
 
     public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket socket, final String name, final boolean serverHeart, final boolean encrypt) {
-        super(socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
+        super(new FocessScheduler("FocessSidedClientReceiver"), socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
         this.scheduler.runTimer(() -> {
             if (this.connected)
                 this.packets.offer(new HeartPacket(this.id, this.token, System.currentTimeMillis()));
@@ -39,34 +38,6 @@ public class FocessSidedClientReceiver extends AClientReceiver {
     @Override
     public void sendPacket(final Packet packet) {
         this.packets.add(new ClientPackPacket(this.id, this.token, packet));
-    }
-
-    @PacketHandler
-    public void onConnected(final ConnectedPacket packet) {
-        if (this.connected) {
-            if (ASocket.isDebug())
-                System.out.println("PC FocessSocket: reject client " + this.name + " connect because of already connected");
-            return;
-        }
-        if (ASocket.isDebug())
-            System.out.println("PC FocessSocket: accept client " + this.name + " connect");
-        this.token = packet.getToken();
-        this.id = packet.getClientId();
-        this.connected = true;
-        this.key = packet.getKey();
-    }
-
-    @PacketHandler
-    public void onServerPacket(final ServerPackPacket packet) {
-        if (!this.connected) {
-            if (ASocket.isDebug())
-                System.out.println("PC FocessSocket: reject client " + this.name + " receive packet because of not connected");
-            return;
-        }
-        if (ASocket.isDebug())
-            System.out.println("PC FocessSocket: accept client " + this.name + " receive packet");
-        for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
-            packHandler.handle(this.id, packet.getPacket());
     }
 
     @Override

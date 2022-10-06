@@ -13,7 +13,7 @@ import top.focess.net.socket.Socket;
 import java.util.Map;
 import java.util.Queue;
 
-public class FocessSidedReceiver extends DefaultServerReceiver {
+public class FocessSidedReceiver extends SidedServerReceiver {
 
     private final Map<String, Queue<Packet>> packets = Maps.newConcurrentMap();
 

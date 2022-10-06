@@ -8,10 +8,7 @@ import top.focess.net.Client;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.ClientPackPacket;
-import top.focess.net.packet.HeartPacket;
-import top.focess.net.packet.Packet;
-import top.focess.net.packet.ServerPackPacket;
+import top.focess.net.packet.*;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.BothSideSocket;
 import top.focess.net.socket.Socket;
@@ -19,10 +16,7 @@ import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AServerReceiver implements ServerReceiver {
@@ -37,7 +31,7 @@ public abstract class AServerReceiver implements ServerReceiver {
 
     public AServerReceiver(Socket socket) {
         this.socket = socket;
-        this.scheduler = new FocessScheduler("FocessServerSocket");
+        this.scheduler = new FocessScheduler("FocessServerReceiver");
         this.scheduler.runTimer(() -> {
             for (final SimpleClient simpleClient : this.clientInfos.values()) {
                 final long time = this.lastHeart.getOrDefault(simpleClient.getId(), 0L);
@@ -45,6 +39,12 @@ public abstract class AServerReceiver implements ServerReceiver {
                     this.clientInfos.remove(simpleClient.getId());
             }
         }, Duration.ZERO, Duration.ofSeconds(1));
+        this.scheduler.runTimer(()->{
+            if (this.isServerSide())
+                for (SimpleClient client : this.clientInfos.values())
+                    if (client.isServerHeart())
+                        this.sendPacket(client.getId(), new ServerHeartPacket(System.currentTimeMillis()));
+        }, Duration.ZERO, Duration.ofSeconds(2));
     }
 
     @NotNull
@@ -159,7 +159,22 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @Override
+    public void sendPacket(int id, Packet packet) {
+        if (this.socket instanceof BothSideSocket)
+            ((BothSideSocket) this.socket).sendServerPacket(this.getClient(id), new ServerPackPacket(packet));
+    }
+
+    @Override
     public SimpleClient getClient(int id) {
         return this.clientInfos.get(id);
+    }
+
+    @Override
+    public List<SimpleClient> getClients() {
+        return Lists.newArrayList(this.clientInfos.values());
+    }
+
+    public void disconnect(final int clientId) {
+        this.clientInfos.remove(clientId);
     }
 }

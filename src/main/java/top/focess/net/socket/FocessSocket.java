@@ -135,7 +135,7 @@ public class FocessSocket extends BothSideSocket {
     }
 
     public boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket packet){
-        if (this.isClientSide())
+        if (this.isClientSide() || client == null)
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())

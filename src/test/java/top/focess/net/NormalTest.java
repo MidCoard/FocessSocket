@@ -41,7 +41,7 @@ public class NormalTest {
     @Test
     public void testUDPSocket() throws Exception {
         FocessUDPSocket focessUDPSocket = new FocessUDPSocket(1234);
-        focessUDPSocket.registerReceiver(new FocessUDPReceiver(focessUDPSocket));
+        focessUDPSocket.registerReceiver(new FocessReceiver(focessUDPSocket));
         AtomicInteger atomicInteger = new AtomicInteger(0);
         ServerReceiver serverReceiver = (ServerReceiver) focessUDPSocket.getReceiver();
         serverReceiver.register("hello",MessagePacket.class,(clientId, packet) -> {
@@ -51,14 +51,14 @@ public class NormalTest {
             atomicInteger.incrementAndGet();
         });
         FocessUDPSocket focessUDPClientSocket = new FocessUDPSocket(1321);
-        focessUDPClientSocket.registerReceiver(new FocessUDPClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
+        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
         ClientReceiver clientReceiver = (ClientReceiver) focessUDPClientSocket.getReceiver();
         clientReceiver.waitConnected();
         clientReceiver.sendPacket(new MessagePacket("hello"));
         Thread.sleep(2000);
         Assertions.assertEquals(atomicInteger.get(), 1);
         FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
-        focessUDPSocket1.registerReceiver(new FocessUDPClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
         Assertions.assertFalse(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
         focessUDPSocket1.close();
         focessUDPSocket.close();
@@ -78,14 +78,14 @@ public class NormalTest {
             atomicInteger.incrementAndGet();
         });
         FocessUDPSocket focessUDPClientSocket = new FocessUDPSocket(1321);
-        focessUDPClientSocket.registerReceiver(new FocessUDPClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
+        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
         ClientReceiver clientReceiver = (ClientReceiver) focessUDPClientSocket.getReceiver();
         clientReceiver.waitConnected();
         clientReceiver.sendPacket(new MessagePacket("hello"));
         Thread.sleep(2000);
         Assertions.assertEquals(atomicInteger.get(), 1);
         FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
-        focessUDPSocket1.registerReceiver(new FocessUDPClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
         Assertions.assertTrue(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
         focessUDPSocket1.close();
         focessUDPSocket.close();

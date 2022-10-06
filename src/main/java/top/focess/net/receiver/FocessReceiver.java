@@ -7,19 +7,18 @@ import top.focess.net.packet.ConnectPacket;
 import top.focess.net.packet.ConnectedPacket;
 import top.focess.net.packet.DisconnectPacket;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessSocket;
 import top.focess.net.socket.BothSideSocket;
 
 public class FocessReceiver extends AServerReceiver {
 
-    public FocessReceiver(final FocessSocket focessSocket) {
-        super(focessSocket);
+    public FocessReceiver(final BothSideSocket socket) {
+        super(socket);
     }
 
     @PacketHandler
     public void onConnect(final ConnectPacket packet) {
         if (ASocket.isDebug())
-            System.out.println("S FocessSocket: client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
+            System.out.println("S FocessSocket: client " + packet.getName() + " try connecting from " + packet.getHost() + ":" + packet.getPort());
         for (final SimpleClient simpleClient : this.clientInfos.values())
             if (simpleClient.getName().equals(packet.getName())) {
                 if (ASocket.isDebug())
@@ -50,7 +49,4 @@ public class FocessReceiver extends AServerReceiver {
             System.out.println("S FocessSocket: server reject client " + packet.getClientId() + " disconnect because of client not exist");
     }
 
-    public void disconnect(final int clientId) {
-        this.clientInfos.remove(clientId);
-    }
 }

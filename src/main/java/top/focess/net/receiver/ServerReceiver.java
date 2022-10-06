@@ -6,6 +6,8 @@ import top.focess.net.PackHandler;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.Packet;
 
+import java.util.List;
+
 /**
  * The socket receiver for server.
  */
@@ -79,4 +81,18 @@ public interface ServerReceiver extends Receiver {
      * @return the client
      */
     SimpleClient getClient(int id);
+
+    /**
+     * Get all the clients
+     * @return all the clients
+     */
+    List<SimpleClient> getClients();
+
+    /**
+     * Send packet to the special client
+     *
+     * @param id     the client id
+     * @param packet the packet
+     */
+    void sendPacket(int id, Packet packet);
 }

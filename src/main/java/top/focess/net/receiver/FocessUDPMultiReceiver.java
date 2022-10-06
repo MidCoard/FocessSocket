@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class FocessUDPMultiReceiver extends FocessUDPReceiver implements ServerMultiReceiver {
+public class FocessUDPMultiReceiver extends FocessReceiver implements ServerMultiReceiver {
 
 
     public FocessUDPMultiReceiver(final FocessUDPSocket focessUDPSocket) {
@@ -33,13 +33,6 @@ public class FocessUDPMultiReceiver extends FocessUDPReceiver implements ServerM
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
-    }
-
-    @Override
-    public void sendPacket(final int id, final Packet packet) {
-        final SimpleClient simpleClient = this.clientInfos.get(id);
-        if (simpleClient != null)
-            ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ServerPackPacket(packet));
     }
 
     @Override

@@ -28,6 +28,7 @@ public class PacketPreCodec {
         register(ServerPackPacket.PACKET_ID, new ServerPackPacketCodec());
         register(SidedConnectPacket.PACKET_ID, new SidedConnectPacketCodec());
         register(WaitPacket.PACKET_ID, new WaitPacketCodec());
+        register(ServerHeartPacket.PACKET_ID, new ServerHeartPacketCodec());
     }
 
     private final List<Byte> data = Lists.newArrayList();

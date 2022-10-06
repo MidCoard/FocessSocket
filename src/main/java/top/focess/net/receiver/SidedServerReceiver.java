@@ -1,17 +1,15 @@
 package top.focess.net.receiver;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.DisconnectPacket;
-import top.focess.net.packet.Packet;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.Socket;
 
-public abstract class DefaultServerReceiver extends AServerReceiver {
+public abstract class SidedServerReceiver extends AServerReceiver {
 
-    public DefaultServerReceiver(Socket socket) {
+    public SidedServerReceiver(Socket socket) {
         super(socket);
     }
 
@@ -29,9 +27,5 @@ public abstract class DefaultServerReceiver extends AServerReceiver {
                 System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of token conflict");
         } else if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
-    }
-
-    public void disconnect(final int clientId) {
-        this.clientInfos.remove(clientId);
     }
 }

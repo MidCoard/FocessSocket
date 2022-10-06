@@ -11,13 +11,6 @@ import java.util.List;
  */
 public interface ServerMultiReceiver extends ServerReceiver {
 
-    /**
-     * Send packet to the special client
-     *
-     * @param id     the client id
-     * @param packet the packet
-     */
-    void sendPacket(int id, Packet packet);
 
     /**
      * Get the list of the clients with given name
