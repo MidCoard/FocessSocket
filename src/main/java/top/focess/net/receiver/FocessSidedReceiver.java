@@ -13,7 +13,7 @@ import top.focess.net.socket.Socket;
 import java.util.Map;
 import java.util.Queue;
 
-public class FocessSidedReceiver extends SidedServerReceiver {
+public class FocessSidedReceiver extends AServerReceiver {
 
     private final Map<String, Queue<Packet>> packets = Maps.newConcurrentMap();
 
@@ -57,6 +57,22 @@ public class FocessSidedReceiver extends SidedServerReceiver {
         } else if (ASocket.isDebug())
             System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " send wait because of client not exist");
         return null;
+    }
+
+    @PacketHandler
+    public void onDisconnect(@NotNull final DisconnectPacket packet) {
+        if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " disconnect");
+        if (this.clientInfos.get(packet.getClientId()) != null) {
+            final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
+            if (simpleClient.getToken().equals(packet.getToken())) {
+                if (ASocket.isDebug())
+                    System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " disconnect");
+                this.disconnect(packet.getClientId());
+            } else if (ASocket.isDebug())
+                System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of token conflict");
+        } else if (ASocket.isDebug())
+            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
     }
 
     public void sendPacket(final String client, final Packet packet) {

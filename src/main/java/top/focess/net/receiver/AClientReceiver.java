@@ -27,7 +27,6 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected int id;
     protected volatile boolean connected;
 
-
     protected long lastHeart;
 
     protected final RSAKeypair keypair;
@@ -122,6 +121,7 @@ public abstract class AClientReceiver implements ClientReceiver {
     @Override
     public void disconnect() {
         this.sendPacket(new DisconnectPacket(this.id, this.token));
+        this.connected = false;
     }
 
     @Override
