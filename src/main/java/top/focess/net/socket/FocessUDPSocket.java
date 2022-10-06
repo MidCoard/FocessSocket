@@ -122,7 +122,7 @@ public class FocessUDPSocket extends BothSideSocket {
     }
 
     public boolean sendServerPacket(SimpleClient client, final String host, final int port, final ServerPacket packet) {
-        if (this.isClientSide() || client == null)
+        if (this.isClientSide())
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())

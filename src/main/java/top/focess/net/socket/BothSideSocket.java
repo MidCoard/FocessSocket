@@ -18,6 +18,8 @@ public abstract class BothSideSocket extends ASocket{
     public abstract boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket serverPacket);
 
     public boolean sendServerPacket(SimpleClient client, ServerPacket serverPacket){
+        if (client == null)
+            return false;
         return this.sendServerPacket(client,client.getHost(),client.getPort(),serverPacket);
     }
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import top.focess.net.Client;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
@@ -73,7 +72,7 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @Override
-    public @Nullable Client getClient(final String name) {
+    public @Nullable SimpleClient getClient(final String name) {
         return this.clientInfos.values().stream().filter(simpleClient -> simpleClient.getName().equals(name)).findFirst().orElse(null);
     }
 
@@ -142,26 +141,11 @@ public abstract class AServerReceiver implements ServerReceiver {
 
     @Override
     public void close() {
-        if (this.scheduler != null)
-            this.scheduler.close();
+        this.scheduler.close();
         for (final Integer id : this.clientInfos.keySet())
             this.disconnect(id);
         this.clientInfos.clear();
         this.unregisterAll();
-    }
-
-    @Override
-    public void sendPacket(final String client, final Packet packet) {
-        if (this.socket instanceof BothSideSocket)
-            for (final SimpleClient simpleClient : this.clientInfos.values())
-                if (simpleClient.getName().equals(client))
-                    ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ServerPackPacket(packet));
-    }
-
-    @Override
-    public void sendPacket(int id, Packet packet) {
-        if (this.socket instanceof BothSideSocket)
-            ((BothSideSocket) this.socket).sendServerPacket(this.getClient(id), new ServerPackPacket(packet));
     }
 
     @Override

@@ -83,4 +83,14 @@ public class FocessSidedReceiver extends AServerReceiver {
             return v;
         });
     }
+
+    @Override
+    public void sendPacket(int id, Packet packet) {
+        this.packets.compute(this.clientInfos.get(id).getName(), (k, v) -> {
+            if (v == null)
+                v = Queues.newConcurrentLinkedQueue();
+            v.offer(new ServerPackPacket(packet));
+            return v;
+        });
+    }
 }

@@ -3,9 +3,7 @@ package top.focess.net.receiver;
 import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.ConnectPacket;
-import top.focess.net.packet.ConnectedPacket;
-import top.focess.net.packet.DisconnectPacket;
+import top.focess.net.packet.*;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.BothSideSocket;
 
@@ -49,4 +47,13 @@ public class FocessReceiver extends AServerReceiver {
             System.out.println("S FocessSocket: server reject client " + packet.getClientId() + " disconnect because of client not exist");
     }
 
+    @Override
+    public void sendPacket(String client, Packet packet) {
+        ((BothSideSocket) this.socket).sendServerPacket(this.getClient(client), new ServerPackPacket(packet));
+    }
+
+    @Override
+    public void sendPacket(int id, Packet packet) {
+        ((BothSideSocket) this.socket).sendServerPacket(this.getClient(id), new ServerPackPacket(packet));
+    }
 }

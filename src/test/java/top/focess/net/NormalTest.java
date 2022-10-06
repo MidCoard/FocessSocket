@@ -113,4 +113,18 @@ public class NormalTest {
         client.close();
         server.close();
     }
+
+    @Test
+    public void testReconnect() throws Exception {
+        FocessSocket socket = new FocessSocket(1234);
+        socket.registerReceiver(new FocessReceiver(socket));
+        FocessSocket client = new FocessSocket();
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", 1234, "hello"));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        clientReceiver.waitConnected();
+        clientReceiver.disconnect();
+        Assertions.assertTrue(clientReceiver.waitConnected(5, TimeUnit.SECONDS));
+        socket.close();
+        client.close();
+    }
 }
