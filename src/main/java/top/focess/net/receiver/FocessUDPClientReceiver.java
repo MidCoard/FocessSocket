@@ -46,11 +46,11 @@ public class FocessUDPClientReceiver extends AClientReceiver{
     public void onConnected(final ConnectedPacket packet) {
         if (this.connected) {
             if (ASocket.isDebug())
-                System.out.println("PC FocessSocket: reject client " + this.name + " connect because of already connected");
+                System.out.println("SC FocessSocket: reject client " + this.name + " connect because of already connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("PC FocessSocket: accept client " + this.name + " connect");
+            System.out.println("SC FocessSocket: accept client " + this.name + " connect");
         this.token = packet.getToken();
         this.id = packet.getClientId();
         this.connected = true;
@@ -61,11 +61,11 @@ public class FocessUDPClientReceiver extends AClientReceiver{
     public void onServerPacket(final ServerPackPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
-                System.out.println("PC FocessSocket: reject client " + this.name + " receive packet because of not connected");
+                System.out.println("SC FocessSocket: reject client " + this.name + " receive packet because of not connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("PC FocessSocket: accept client " + this.name + " receive packet");
+            System.out.println("SC FocessSocket: accept client " + this.name + " receive packet");
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
             packHandler.handle(this.id, packet.getPacket());
     }

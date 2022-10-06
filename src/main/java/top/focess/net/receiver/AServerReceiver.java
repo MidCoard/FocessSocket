@@ -154,7 +154,7 @@ public abstract class AServerReceiver implements ServerReceiver {
         if (this.socket instanceof BothSideSocket)
             for (final SimpleClient simpleClient : this.clientInfos.values())
                 if (simpleClient.getName().equals(client))
-                    ((BothSideSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+                    ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ServerPackPacket(packet));
     }
 
     @Override

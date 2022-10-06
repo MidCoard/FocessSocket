@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class FocessUDPMultiReceiver extends DefaultServerReceiver implements ServerMultiReceiver {
+public class FocessUDPMultiReceiver extends FocessUDPReceiver implements ServerMultiReceiver {
 
 
     public FocessUDPMultiReceiver(final FocessUDPSocket focessUDPSocket) {
@@ -26,20 +26,20 @@ public class FocessUDPMultiReceiver extends DefaultServerReceiver implements Ser
     }
 
     @PacketHandler
-    public Packet onConnect(@NotNull final ConnectPacket packet) {
+    public void onConnect(@NotNull final ConnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("PM FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
         final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId++, packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
-        return new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey());
+        ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
     }
 
     @Override
     public void sendPacket(final int id, final Packet packet) {
         final SimpleClient simpleClient = this.clientInfos.get(id);
         if (simpleClient != null)
-            ((BothSideSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+            ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ServerPackPacket(packet));
     }
 
     @Override

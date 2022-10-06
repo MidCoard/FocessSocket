@@ -31,7 +31,7 @@ public class FocessReceiver extends AServerReceiver {
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())
             System.out.println("S FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
-        ((BothSideSocket) this.socket).sendServerPacket(simpleClient, packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
+        ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
     }
 
     @PacketHandler
