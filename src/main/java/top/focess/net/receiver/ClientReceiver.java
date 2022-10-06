@@ -2,11 +2,21 @@ package top.focess.net.receiver;
 
 import top.focess.net.PackHandler;
 import top.focess.net.packet.Packet;
+import top.focess.scheduler.Scheduler;
+import top.focess.scheduler.Task;
+import top.focess.scheduler.ThreadPoolScheduler;
+
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The socket receiver for client.
  */
 public interface ClientReceiver extends Receiver {
+
+    Scheduler SCHEDULER = new ThreadPoolScheduler(7, true, "ClientReceiver");
 
     /**
      * Send the packet to the server
@@ -110,4 +120,20 @@ public interface ClientReceiver extends Receiver {
      * Wait for the client to connect to a server
      */
     void waitConnected();
+
+    /**
+     * Wait for the client to connect to a server
+     * @param time the time to wait
+     * @param unit the unit of the time
+     * @return true if the client has connected to a server in the time, false otherwise
+     */
+    default boolean waitConnected(long time, TimeUnit unit) {
+        Task task = SCHEDULER.run(this::waitConnected);
+        try {
+            task.join(time, unit);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

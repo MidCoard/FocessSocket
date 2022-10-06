@@ -8,6 +8,7 @@ import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessSocket;
 import top.focess.net.socket.FocessUDPSocket;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NormalTest {
@@ -58,6 +59,37 @@ public class NormalTest {
         clientReceiver.sendPacket(new MessagePacket("hello"));
         Thread.sleep(2000);
         Assertions.assertEquals(atomicInteger.get(), 1);
+        FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
+        focessUDPSocket1.registerReceiver(new FocessUDPClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        Assertions.assertFalse(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
+        focessUDPSocket1.close();
+        focessUDPSocket.close();
+        focessUDPClientSocket.close();
+    }
+
+    @Test
+    public void testUDPMultiSocket() throws Exception {
+        FocessUDPSocket focessUDPSocket = new FocessUDPSocket(1234);
+        focessUDPSocket.registerReceiver(new FocessUDPMultiReceiver(focessUDPSocket));
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        ServerReceiver serverReceiver = (ServerReceiver) focessUDPSocket.getReceiver();
+        serverReceiver.register("hello",MessagePacket.class,(clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        FocessUDPSocket focessUDPClientSocket = new FocessUDPSocket(1321);
+        focessUDPClientSocket.registerReceiver(new FocessUDPClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
+        ClientReceiver clientReceiver = (ClientReceiver) focessUDPClientSocket.getReceiver();
+        clientReceiver.waitConnected();
+        clientReceiver.sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
+        focessUDPSocket1.registerReceiver(new FocessUDPClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        Assertions.assertTrue(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
+        focessUDPSocket1.close();
         focessUDPSocket.close();
         focessUDPClientSocket.close();
     }

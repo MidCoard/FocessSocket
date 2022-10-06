@@ -74,4 +74,16 @@ public class ConnectPacket extends ClientPacket {
     public @Nullable String getKey() {
         return key;
     }
+
+    @Override
+    public String toString() {
+        return "ConnectPacket{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                ", name='" + name + '\'' +
+                ", serverHeart=" + serverHeart +
+                ", encrypt=" + encrypt +
+                ", key='" + key + '\'' +
+                "} " + super.toString();
+    }
 }

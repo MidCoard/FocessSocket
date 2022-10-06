@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AServerReceiver implements ServerReceiver {
 
@@ -32,7 +33,7 @@ public abstract class AServerReceiver implements ServerReceiver {
     protected final Map<String, Map<Class<?>, List<PackHandler>>> packHandlers = Maps.newConcurrentMap();
     protected final Scheduler scheduler;
     protected final Socket socket;
-    protected int defaultClientId;
+    protected final AtomicInteger defaultClientId = new AtomicInteger(0);
 
     public AServerReceiver(Socket socket) {
         this.socket = socket;

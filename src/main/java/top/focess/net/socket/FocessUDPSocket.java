@@ -63,19 +63,20 @@ public class FocessUDPSocket extends BothSideSocket {
                     }
                     Packet packet = packetPreCodec.readPacket();
                     if (isDebug())
-                        System.out.println("S FocessSocket: receive packet: " + packet);
-                    if (packet instanceof ClientPacket) {
-                        if (packet instanceof SidedConnectPacket) {
-                            final String name = ((SidedConnectPacket) packet).getName();
-                            packet = new ConnectPacket(this.packet.getAddress().getHostName(), this.packet.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());
-                        }
-                        for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
-                            final Method method = pair.getValue();
-                            try {
-                                method.setAccessible(true);
-                                method.invoke(pair.getKey(), packet);
-                            } catch (final Exception ignored) {
-                            }
+                        if (this.isServerSide())
+                            System.out.println("S FocessSocket: receive packet: " + packet);
+                        else if (this.isClientSide())
+                            System.out.println("SC FocessSocket: receive packet: " + packet);
+                    if (packet instanceof SidedConnectPacket) {
+                        final String name = ((SidedConnectPacket) packet).getName();
+                        packet = new ConnectPacket(this.packet.getAddress().getHostName(), this.packet.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());
+                    }
+                    for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
+                        final Method method = pair.getValue();
+                        try {
+                            method.setAccessible(true);
+                            method.invoke(pair.getKey(), packet);
+                        } catch (final Exception ignored) {
                         }
                     }
                 } catch (final Exception e) {

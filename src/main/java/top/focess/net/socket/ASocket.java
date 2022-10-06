@@ -55,10 +55,15 @@ public abstract class ASocket implements Socket {
                 }
     }
 
-    private static List<Method> getAllMethods(Class<?> c) {
+    private static @NotNull List<Method> getAllMethods(Class<?> c) {
         List<Method> methods = Lists.newArrayList();
+        List<String> methodNames = Lists.newArrayList();
         while (c != null) {
-            Collections.addAll(methods, c.getDeclaredMethods());
+            for (Method method : c.getDeclaredMethods())
+                if (!methodNames.contains(method.getName())) {
+                    methods.add(method);
+                    methodNames.add(method.getName());
+                }
             c = c.getSuperclass();
         }
         return methods;

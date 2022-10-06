@@ -19,16 +19,16 @@ public class FocessUDPReceiver extends AServerReceiver{
     @PacketHandler
     public void onConnect(final ConnectPacket packet) {
         if (ASocket.isDebug())
-            System.out.println("P FocessSocket: client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
+            System.out.println("S FocessSocket: client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
         for (final SimpleClient simpleClient : this.clientInfos.values())
             if (simpleClient.getName().equals(packet.getName())) {
                 if (ASocket.isDebug())
-                    System.out.println("P FocessSocket: server reject client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort() + " because of name conflict");
+                    System.out.println("S FocessSocket: server reject client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort() + " because of name conflict");
                 return;
             }
         if (ASocket.isDebug())
-            System.out.println("P FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
-        final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId++, packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
+            System.out.println("S FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
+        final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId.incrementAndGet(), packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         ((BothSideSocket) this.socket).sendServerPacket(simpleClient, new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));

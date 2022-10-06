@@ -75,7 +75,10 @@ public class FocessSocket extends BothSideSocket {
                     inputStream.close();
                     final Packet packet = packetPreCodec.readPacket();
                     if (isDebug())
-                        System.out.println("S FocessSocket: receive packet: " + packet);
+                        if (this.isServerSide())
+                            System.out.println("S FocessSocket: receive packet: " + packet);
+                        else if (this.isClientSide())
+                            System.out.println("SC FocessSocket: receive packet: " + packet);
                     if (packet != null)
                         for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
                             final Method method = pair.getValue();
