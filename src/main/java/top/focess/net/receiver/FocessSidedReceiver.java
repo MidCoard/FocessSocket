@@ -33,6 +33,7 @@ public class FocessSidedReceiver extends DefaultServerReceiver {
                 return null;
             }
         final SimpleClient simpleClient = new SimpleClient(this.defaultClientId.incrementAndGet(), packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());
+        packet.setClientId(simpleClient.getId());
         this.lastHeart.put(simpleClient.getId(), System.currentTimeMillis());
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())

@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 public class FocessSidedClientSocket extends ClientSocket {
@@ -21,6 +22,10 @@ public class FocessSidedClientSocket extends ClientSocket {
     public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
         super(host, port);
         super.registerReceiver(new FocessSidedClientReceiver(this, name, serverHeart, encrypt));
+    }
+
+    public FocessSidedClientSocket(final String host, final int port, String name) {
+        this(host, port, name, false, false);
     }
 
 

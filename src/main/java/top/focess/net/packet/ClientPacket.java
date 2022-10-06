@@ -8,7 +8,7 @@ public abstract class ClientPacket extends Packet {
     /**
      * The client id
      */
-    private final int clientId;
+    private int clientId;
 
     /**
      * The client token
@@ -32,5 +32,9 @@ public abstract class ClientPacket extends Packet {
 
     public String getToken() {
         return this.token;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 }

@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
 
@@ -78,6 +79,7 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
                                     outputStream.flush();
                                 }
                             } catch (final Exception ignored) {
+                                ignored.printStackTrace();
                             }
                         }
                     socket.shutdownOutput();

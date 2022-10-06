@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import top.focess.net.packet.MessagePacket;
 import top.focess.net.receiver.*;
-import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessSocket;
-import top.focess.net.socket.FocessUDPSocket;
+import top.focess.net.socket.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,5 +90,27 @@ public class NormalTest {
         focessUDPSocket1.close();
         focessUDPSocket.close();
         focessUDPClientSocket.close();
+    }
+
+    @Test
+    public void testSidedSocket() throws Exception {
+        FocessSidedSocket server = new FocessSidedSocket(1234);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        server.getReceiver().register("focess", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received focess from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        FocessSidedClientSocket client = new FocessSidedClientSocket("localhost", 1234, "focess");
+        client.getReceiver().waitConnected();
+        client.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        FocessSidedClientSocket client1 = new FocessSidedClientSocket("localhost", 1234, "focess");
+        Assertions.assertFalse(client1.getReceiver().waitConnected(5, TimeUnit.SECONDS));
+        client1.close();
+        client.close();
+        server.close();
     }
 }
