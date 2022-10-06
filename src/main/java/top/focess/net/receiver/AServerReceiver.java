@@ -13,7 +13,7 @@ import top.focess.net.packet.HeartPacket;
 import top.focess.net.packet.Packet;
 import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.SendableSocket;
+import top.focess.net.socket.BothSideSocket;
 import top.focess.net.socket.Socket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
@@ -151,10 +151,10 @@ public abstract class AServerReceiver implements ServerReceiver {
 
     @Override
     public void sendPacket(final String client, final Packet packet) {
-        if (this.socket instanceof SendableSocket)
+        if (this.socket instanceof BothSideSocket)
             for (final SimpleClient simpleClient : this.clientInfos.values())
                 if (simpleClient.getName().equals(client))
-                    ((SendableSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+                    ((BothSideSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
     }
 
     @Override

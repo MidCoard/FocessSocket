@@ -109,4 +109,15 @@ public abstract class AClientReceiver implements ClientReceiver {
     public void disconnect() {
         this.sendPacket(new DisconnectPacket(this.id, this.token));
     }
+
+    @Override
+    public void waitConnected() {
+        while (!this.connected) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

@@ -6,7 +6,6 @@ import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.*;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessUDPClientSocket;
 import top.focess.net.socket.FocessUDPSocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
@@ -21,22 +20,26 @@ public class FocessUDPClientReceiver extends AClientReceiver{
 
     private final Queue<ClientPacket> packets = Queues.newConcurrentLinkedQueue();
 
-    public FocessUDPClientReceiver(FocessUDPClientSocket socket, String name, boolean serverHeart, boolean encrypt) {
-        super(socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
+    public FocessUDPClientReceiver(FocessUDPSocket socket,String localhost, String host, int port, String name, boolean serverHeart, boolean encrypt) {
+        super(host, port, name, serverHeart, encrypt);
         this.scheduler.runTimer(() -> {
             if (this.connected)
                 this.packets.offer(new HeartPacket(this.id, this.token, System.currentTimeMillis()));
             else
-                socket.sendPacket(new SidedConnectPacket(name, serverHeart, encrypt, keypair.getPublicKey()));
+                socket.sendClientPacket(this.getHost(), this.getPort(), new ConnectPacket(localhost, socket.getLocalPort(), name, serverHeart, encrypt, keypair.getPublicKey()));
         }, Duration.ZERO, Duration.ofSeconds(2));
         this.scheduler.runTimer(() -> {
             if (this.connected) {
                 ClientPacket packet = this.packets.poll();
                 if (packet == null)
                     packet = new WaitPacket(this.id, this.token);
-                socket.sendPacket(packet);
+                socket.sendClientPacket(this.getHost(), this.getPort(), packet);
             }
         }, Duration.ZERO, Duration.ofMillis(100));
+    }
+
+    public FocessUDPClientReceiver(FocessUDPSocket socket,String localhost, String host, int port, String name) {
+        this(socket,localhost, host, port, name, false, false);
     }
 
     @PacketHandler

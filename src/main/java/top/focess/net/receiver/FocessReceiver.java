@@ -8,9 +8,7 @@ import top.focess.net.packet.ConnectedPacket;
 import top.focess.net.packet.DisconnectPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessSocket;
-import top.focess.net.socket.SendableSocket;
-
-import java.util.Objects;
+import top.focess.net.socket.BothSideSocket;
 
 public class FocessReceiver extends AServerReceiver {
 
@@ -33,7 +31,7 @@ public class FocessReceiver extends AServerReceiver {
         this.clientInfos.put(simpleClient.getId(), simpleClient);
         if (ASocket.isDebug())
             System.out.println("S FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
-        ((SendableSocket) this.socket).sendServerPacket(simpleClient, packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
+        ((BothSideSocket) this.socket).sendServerPacket(simpleClient, packet.getHost(), packet.getPort(), new ConnectedPacket(simpleClient.getId(), simpleClient.getToken(), simpleClient.getPublicKey()));
     }
 
     @PacketHandler

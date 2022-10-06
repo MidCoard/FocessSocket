@@ -2,13 +2,10 @@ package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
-import top.focess.net.Client;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.ClientPacket;
-import top.focess.net.packet.Packet;
-import top.focess.net.packet.ServerPacket;
+import top.focess.net.packet.*;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.net.receiver.ServerReceiver;
@@ -24,15 +21,18 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class FocessSocket extends ASocket implements SendableSocket {
+public class FocessSocket extends BothSideSocket {
 
     private final ServerSocket server;
-    private final int localPort;
+
+    public FocessSocket() throws IllegalPortException {
+        this(0);
+    }
 
     public FocessSocket(final int localPort) throws IllegalPortException {
-        this.localPort = localPort;
         try {
             this.server = new ServerSocket(localPort);
+            this.localPort = this.server.getLocalPort();
         } catch (final IOException e) {
             throw new IllegalPortException(localPort);
         }
@@ -45,6 +45,8 @@ public class FocessSocket extends ASocket implements SendableSocket {
                     final PacketPreCodec packetPreCodec = new PacketPreCodec();
                     int length;
                     if (this.isServerSide()) {
+                        while ((length = inputStream.read(buffer)) != -1)
+                            packetPreCodec.push(buffer, length);
                         int packetId = packetPreCodec.readInt();
                         if (packetId == -1) {
                             SimpleClient client = ((ServerReceiver) this.getReceiver()).getClient(packetPreCodec.readInt());
@@ -57,8 +59,7 @@ public class FocessSocket extends ASocket implements SendableSocket {
                             packetPreCodec.clear();
                             packetPreCodec.push(data.getBytes(StandardCharsets.UTF_8));
                         } else
-                            while ((length = inputStream.read(buffer)) != -1)
-                                packetPreCodec.push(buffer, length);
+                            packetPreCodec.reset();
                     } else if (this.isClientSide()) {
                         if (!((ClientReceiver) this.getReceiver()).isEncrypt())
                             while ((length = inputStream.read(buffer)) != -1)
@@ -95,11 +96,11 @@ public class FocessSocket extends ASocket implements SendableSocket {
     public boolean sendClientPacket(final String targetHost, final int targetPort, final ClientPacket packet) {
         if (this.isServerSide())
             return false;
-        if (!((ClientReceiver) this.getReceiver()).isConnected())
+        if (!((ClientReceiver) this.getReceiver()).isConnected() && !(packet instanceof ConnectPacket) && !(packet instanceof SidedConnectPacket))
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
-            System.out.println("S FocessSocket: send packet: " + packet);
+            System.out.println("SC FocessSocket: send packet: " + packet);
         if (packetPreCodec.writePacket(packet))
             try {
                 final java.net.Socket socket = new java.net.Socket(targetHost, targetPort);
@@ -130,11 +131,6 @@ public class FocessSocket extends ASocket implements SendableSocket {
         }
     }
 
-    public int getLocalPort() {
-        return this.localPort;
-    }
-
-
     public boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket packet){
         if (this.isClientSide())
             return false;
@@ -156,14 +152,5 @@ public class FocessSocket extends ASocket implements SendableSocket {
                 return false;
             }
         return false;
-    }
-
-    @Override
-    public void registerReceiver(Receiver receiver) {
-        if (this.isClientSide() && receiver.isServerSide())
-            throw new UnsupportedOperationException();
-        if (this.isServerSide() && receiver.isClientSide())
-            throw new UnsupportedOperationException();
-        super.registerReceiver(receiver);
     }
 }

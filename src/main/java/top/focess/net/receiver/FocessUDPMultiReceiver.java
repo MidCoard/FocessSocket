@@ -12,7 +12,7 @@ import top.focess.net.packet.Packet;
 import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.FocessUDPSocket;
-import top.focess.net.socket.SendableSocket;
+import top.focess.net.socket.BothSideSocket;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ public class FocessUDPMultiReceiver extends DefaultServerReceiver implements Ser
     public void sendPacket(final int id, final Packet packet) {
         final SimpleClient simpleClient = this.clientInfos.get(id);
         if (simpleClient != null)
-            ((SendableSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
+            ((BothSideSocket) this.socket).sendServerPacket(simpleClient, Objects.requireNonNull(simpleClient.getHost()), simpleClient.getPort(), new ServerPackPacket(packet));
     }
 
     @Override

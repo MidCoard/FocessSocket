@@ -105,4 +105,9 @@ public interface ClientReceiver extends Receiver {
      * Disconnect the client
      */
     void disconnect();
+
+    /**
+     * Wait for the client to connect to a server
+     */
+    void waitConnected();
 }
