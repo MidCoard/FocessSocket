@@ -49,4 +49,13 @@ public class ConnectedPacket extends ServerPacket {
     public String getKey() {
         return key;
     }
+
+    @Override
+    public String toString() {
+        return "ConnectedPacket{" +
+                "clientId=" + clientId +
+                ", token='" + token + '\'' +
+                ", key='" + key + '\'' +
+                "} " + super.toString();
+    }
 }

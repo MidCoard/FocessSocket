@@ -351,4 +351,17 @@ public class PacketPreCodec {
     public void reset() {
         this.pointer = 0;
     }
+
+    public void writeByteArray(byte[] v) {
+        this.writeInt(v.length);
+        this.push(v);
+    }
+
+    public byte[] readByteArray() {
+        int length = this.readInt();
+        byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++)
+            bytes[i] = this.readByte();
+        return bytes;
+    }
 }

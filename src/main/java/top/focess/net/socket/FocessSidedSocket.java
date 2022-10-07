@@ -9,7 +9,6 @@ import top.focess.net.packet.Packet;
 import top.focess.net.packet.ServerPacket;
 import top.focess.net.receiver.FocessSidedReceiver;
 import top.focess.net.receiver.Receiver;
-import top.focess.net.receiver.ServerReceiver;
 import top.focess.util.Pair;
 import top.focess.util.RSA;
 
@@ -18,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
@@ -47,16 +45,14 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
                     int packetId = packetPreCodec.readInt();
                     if (packetId == -1) {
                         SimpleClient client = this.getReceiver().getClient(packetPreCodec.readInt());
-                        String encryptedData = packetPreCodec.readString();
                         if (client == null || !client.isEncrypt()) {
                             socket.shutdownOutput();
                             continue;
                         }
-                        String data = RSA.decryptRSA(encryptedData, client.getPrivateKey());
+                        byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
                         packetPreCodec.clear();
-                        packetPreCodec.push(data.getBytes(StandardCharsets.UTF_8));
-                    }
-                    packetPreCodec.reset();
+                        packetPreCodec.push(data);
+                    } else packetPreCodec.reset();
                     final Packet packet = packetPreCodec.readPacket();
                     if (isDebug())
                         System.out.println("P FocessSocket: receive packet: " + packet);
@@ -73,13 +69,12 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
                                     final PacketPreCodec handler = new PacketPreCodec();
                                     handler.writePacket((Packet) o);
                                     if (this.getReceiver().getClient(((ClientPacket) packet).getClientId()).isEncrypt())
-                                        outputStream.write(RSA.encryptRSA(new String(handler.getBytes(), StandardCharsets.UTF_8), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getPublicKey()).getBytes(StandardCharsets.UTF_8));
+                                        outputStream.write(RSA.encryptRSA(handler.getBytes(), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getKey()));
                                     else
                                         outputStream.write(handler.getBytes());
                                     outputStream.flush();
                                 }
                             } catch (final Exception ignored) {
-                                ignored.printStackTrace();
                             }
                         }
                     socket.shutdownOutput();

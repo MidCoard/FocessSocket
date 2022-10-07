@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
+import top.focess.net.packet.SidedConnectPacket;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.FocessSidedClientReceiver;
 import top.focess.net.receiver.Receiver;
@@ -38,11 +39,11 @@ public class FocessSidedClientSocket extends ClientSocket {
                 return false;
             final java.net.Socket socket = new java.net.Socket(this.host, this.port);
             final OutputStream outputStream = socket.getOutputStream();
-            if (this.getReceiver().isEncrypt()) {
+            if (this.getReceiver().isEncrypt() && !(packet instanceof SidedConnectPacket)) {
                 PacketPreCodec codec = new PacketPreCodec();
                 codec.writeInt(-1);
                 codec.writeInt(this.getReceiver().getClientId());
-                codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(),StandardCharsets.UTF_8),this.getReceiver().getKey()));
+                codec.writeByteArray(RSA.encryptRSA(packetPreCodec.getBytes(),this.getReceiver().getKey()));
                 outputStream.write(codec.getBytes());
             } else
                 outputStream.write(packetPreCodec.getBytes());
@@ -60,7 +61,7 @@ public class FocessSidedClientSocket extends ClientSocket {
                 while ((length = inputStream.read(buffer)) != -1)
                     for (int i = 0; i < length; i++)
                         bytes.add(buffer[i]);
-                codec.push(RSA.decryptRSA(new String (Bytes.toArray(bytes), StandardCharsets.UTF_8), this.getReceiver().getPrivateKey()).getBytes(StandardCharsets.UTF_8));
+                codec.push(RSA.decryptRSA(Bytes.toArray(bytes), this.getReceiver().getPrivateKey()));
             }
             final Packet p = codec.readPacket();
             if (isDebug())

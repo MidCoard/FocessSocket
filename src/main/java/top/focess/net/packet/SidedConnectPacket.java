@@ -47,4 +47,14 @@ public class SidedConnectPacket extends ClientPacket {
     public String getKey() {
         return key;
     }
+
+    @Override
+    public String toString() {
+        return "SidedConnectPacket{" +
+                "name='" + name + '\'' +
+                ", serverHeart=" + serverHeart +
+                ", encrypt=" + encrypt +
+                ", key='" + key + '\'' +
+                "} " + super.toString();
+    }
 }

@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class FocessSocket extends BothSideSocket {
@@ -54,10 +53,10 @@ public class FocessSocket extends BothSideSocket {
                                 inputStream.close();
                                 continue;
                             }
-                            String encryptedData = packetPreCodec.readString();
-                            String data = RSA.decryptRSA(encryptedData, client.getPrivateKey());
+                            byte[] encryptedData = packetPreCodec.readByteArray();
+                            byte[] data = RSA.decryptRSA(encryptedData, client.getPrivateKey());
                             packetPreCodec.clear();
-                            packetPreCodec.push(data.getBytes(StandardCharsets.UTF_8));
+                            packetPreCodec.push(data);
                         } else
                             packetPreCodec.reset();
                     } else if (this.isClientSide()) {
@@ -69,7 +68,7 @@ public class FocessSocket extends BothSideSocket {
                             while ((length = inputStream.read(buffer)) != -1)
                                 for (int i = 0; i < length; i++)
                                     bytes.add(buffer[i]);
-                            packetPreCodec.push(RSA.decryptRSA(new String(Bytes.toArray(bytes), StandardCharsets.UTF_8), ((ClientReceiver) this.getReceiver()).getPrivateKey()).getBytes(StandardCharsets.UTF_8));
+                            packetPreCodec.push(RSA.decryptRSA(Bytes.toArray(bytes), ((ClientReceiver) this.getReceiver()).getPrivateKey()));
                         }
                     }
                     inputStream.close();
@@ -112,7 +111,7 @@ public class FocessSocket extends BothSideSocket {
                     PacketPreCodec codec = new PacketPreCodec();
                     codec.writeInt(-1);
                     codec.writeInt(((ClientReceiver) this.getReceiver()).getClientId());
-                    codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(), StandardCharsets.UTF_8), ((ClientReceiver) this.getReceiver()).getKey()));
+                    codec.writeByteArray(RSA.encryptRSA(packetPreCodec.getBytes(), ((ClientReceiver) this.getReceiver()).getKey()));
                     outputStream.write(codec.getBytes());
                 } else
                     outputStream.write(packetPreCodec.getBytes());
@@ -145,7 +144,7 @@ public class FocessSocket extends BothSideSocket {
                 final java.net.Socket socket = new java.net.Socket(host, port);
                 final OutputStream outputStream = socket.getOutputStream();
                 if (client.isEncrypt())
-                    outputStream.write(RSA.encryptRSA(new String(packetPreCodec.getBytes(), StandardCharsets.UTF_8), client.getKey()).getBytes(StandardCharsets.UTF_8));
+                    outputStream.write(RSA.encryptRSA(packetPreCodec.getBytes(), client.getKey()));
                 else
                     outputStream.write(packetPreCodec.getBytes());
                 outputStream.flush();

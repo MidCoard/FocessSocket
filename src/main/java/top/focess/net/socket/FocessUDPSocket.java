@@ -1,7 +1,6 @@
 package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Bytes;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.SimpleClient;
@@ -18,8 +17,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class FocessUDPSocket extends BothSideSocket {
 
@@ -50,16 +47,15 @@ public class FocessUDPSocket extends BothSideSocket {
                             SimpleClient client = ((ServerReceiver) this.getReceiver()).getClient(packetPreCodec.readInt());
                             if (client == null || !client.isEncrypt())
                                 continue;
-                            String encryptedData = packetPreCodec.readString();
-                            String data = RSA.decryptRSA(encryptedData, client.getPrivateKey());
+                            byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
                             packetPreCodec.clear();
-                            packetPreCodec.push(data.getBytes(StandardCharsets.UTF_8));
+                            packetPreCodec.push(data);
                         } else packetPreCodec.reset();
                     } else if (this.isClientSide()) {
                         if (!((ClientReceiver) this.getReceiver()).isEncrypt())
                             packetPreCodec.push(this.packet.getData());
                         else
-                            packetPreCodec.push(RSA.decryptRSA(new String(this.packet.getData(), StandardCharsets.UTF_8), ((ClientReceiver) this.getReceiver()).getPrivateKey()).getBytes(StandardCharsets.UTF_8));
+                            packetPreCodec.push(RSA.decryptRSA(this.packet.getData(), ((ClientReceiver) this.getReceiver()).getPrivateKey()));
                     }
                     Packet packet = packetPreCodec.readPacket();
                     if (isDebug())
@@ -108,7 +104,7 @@ public class FocessUDPSocket extends BothSideSocket {
                 PacketPreCodec codec = new PacketPreCodec();
                 codec.writeInt(-1);
                 codec.writeInt(((ClientReceiver) this.getReceiver()).getClientId());
-                codec.writeString(RSA.encryptRSA(new String(packetPreCodec.getBytes(), StandardCharsets.UTF_8), ((ClientReceiver) this.getReceiver()).getKey()));
+                codec.writeByteArray(RSA.encryptRSA(packetPreCodec.getBytes(), ((ClientReceiver) this.getReceiver()).getKey()));
                 sendPacket = new DatagramPacket(codec.getBytes(), codec.getBytes().length, new InetSocketAddress(host, port));
             } else sendPacket = new DatagramPacket(packetPreCodec.getBytes(), packetPreCodec.getBytes().length, new InetSocketAddress(host, port));
             try {
@@ -130,8 +126,8 @@ public class FocessUDPSocket extends BothSideSocket {
         if (packetPreCodec.writePacket(packet)) {
             final DatagramPacket sendPacket;
             if (client.isEncrypt()) {
-                String encryptedData = RSA.encryptRSA(new String(packetPreCodec.getBytes(), StandardCharsets.UTF_8), client.getKey());
-                sendPacket = new DatagramPacket(encryptedData.getBytes(StandardCharsets.UTF_8), encryptedData.getBytes(StandardCharsets.UTF_8).length, new InetSocketAddress(host, port));
+                byte[] encryptedData = RSA.encryptRSA(packetPreCodec.getBytes(), client.getKey());
+                sendPacket = new DatagramPacket(encryptedData, encryptedData.length, new InetSocketAddress(host, port));
             }
             else
                 sendPacket = new DatagramPacket(packetPreCodec.getBytes(), packetPreCodec.length(), new InetSocketAddress(host, port));
