@@ -8,7 +8,6 @@ import top.focess.net.socket.*;
 import top.focess.util.RSA;
 import top.focess.util.RSAKeypair;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,21 +47,21 @@ public class NormalTest {
         focessUDPSocket.registerReceiver(new FocessReceiver(focessUDPSocket));
         AtomicInteger atomicInteger = new AtomicInteger(0);
         ServerReceiver serverReceiver = (ServerReceiver) focessUDPSocket.getReceiver();
-        serverReceiver.register("hello",MessagePacket.class,(clientId, packet) -> {
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
             System.out.println("Server received hello from " + clientId);
             System.out.println("client send: " + packet.getMessage());
             Assertions.assertEquals("hello", packet.getMessage());
             atomicInteger.incrementAndGet();
         });
         FocessUDPSocket focessUDPClientSocket = new FocessUDPSocket(1321);
-        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
+        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket, "localhost", "localhost", 1234, "hello"));
         ClientReceiver clientReceiver = (ClientReceiver) focessUDPClientSocket.getReceiver();
         clientReceiver.waitConnected();
         clientReceiver.sendPacket(new MessagePacket("hello"));
         Thread.sleep(2000);
         Assertions.assertEquals(atomicInteger.get(), 1);
         FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
-        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1, "localhost", "localhost", 1234, "hello"));
         Assertions.assertFalse(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
         focessUDPSocket1.close();
         focessUDPSocket.close();
@@ -75,21 +74,21 @@ public class NormalTest {
         focessUDPSocket.registerReceiver(new FocessUDPMultiReceiver(focessUDPSocket));
         AtomicInteger atomicInteger = new AtomicInteger(0);
         ServerReceiver serverReceiver = (ServerReceiver) focessUDPSocket.getReceiver();
-        serverReceiver.register("hello",MessagePacket.class,(clientId, packet) -> {
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
             System.out.println("Server received hello from " + clientId);
             System.out.println("client send: " + packet.getMessage());
             Assertions.assertEquals("hello", packet.getMessage());
             atomicInteger.incrementAndGet();
         });
         FocessUDPSocket focessUDPClientSocket = new FocessUDPSocket(1321);
-        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket,"localhost","localhost",1234, "hello" ));
+        focessUDPClientSocket.registerReceiver(new FocessClientReceiver(focessUDPClientSocket, "localhost", "localhost", 1234, "hello"));
         ClientReceiver clientReceiver = (ClientReceiver) focessUDPClientSocket.getReceiver();
         clientReceiver.waitConnected();
         clientReceiver.sendPacket(new MessagePacket("hello"));
         Thread.sleep(2000);
         Assertions.assertEquals(atomicInteger.get(), 1);
         FocessUDPSocket focessUDPSocket1 = new FocessUDPSocket(2222);
-        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1,"localhost","localhost",1234, "hello" ));
+        focessUDPSocket1.registerReceiver(new FocessClientReceiver(focessUDPSocket1, "localhost", "localhost", 1234, "hello"));
         Assertions.assertTrue(((ClientReceiver) focessUDPSocket1.getReceiver()).waitConnected(5, TimeUnit.SECONDS));
         focessUDPSocket1.close();
         focessUDPSocket.close();
@@ -192,6 +191,149 @@ public class NormalTest {
     }
 
     @Test
+    public void testClientAndServerEncrypt() throws Exception {
+        FocessSocket focessSocket = new FocessSocket(1234);
+        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+        ServerReceiver serverReceiver = (ServerReceiver) focessSocket.getReceiver();
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            serverReceiver.sendPacket("hello", new MessagePacket("world"));
+        });
+        FocessSocket client = new FocessSocket(1222);
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", 1234, "hello", false, true));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        clientReceiver.register(MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Client received hello from server");
+            System.out.println("server send: " + packet.getMessage());
+            Assertions.assertEquals("world", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        clientReceiver.waitConnected();
+        clientReceiver.sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        focessSocket.close();
+        client.close();
+    }
+
+    @Test
+    public void testClientAndServerEncrypt1() throws Exception {
+        FocessUDPSocket focessSocket = new FocessUDPSocket(1234);
+        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+        ServerReceiver serverReceiver = (ServerReceiver) focessSocket.getReceiver();
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            serverReceiver.sendPacket("hello", new MessagePacket("world"));
+        });
+        FocessUDPSocket client = new FocessUDPSocket(1222);
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", 1234, "hello", false, true));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        clientReceiver.register(MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Client received hello from server");
+            System.out.println("server send: " + packet.getMessage());
+            Assertions.assertEquals("world", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        clientReceiver.waitConnected();
+        clientReceiver.sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        focessSocket.close();
+        client.close();
+    }
+
+    @Test
+    public void testClientAndServerEncrypt2() throws Exception {
+        FocessSidedSocket focessSocket = new FocessSidedSocket(1234);
+        focessSocket.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            focessSocket.getReceiver().sendPacket("hello", new MessagePacket("world"));
+        });
+        FocessSidedClientSocket client = new FocessSidedClientSocket("localhost", 1234, "hello", false, true);
+        client.getReceiver().waitConnected();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        client.getReceiver().register(MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Client received hello from server");
+            System.out.println("server send: " + packet.getMessage());
+            Assertions.assertEquals("world", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        client.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        focessSocket.close();
+        client.close();
+    }
+
+    @Test
+    public void testFocessSocket() throws Exception {
+        FocessSocket focessSocket = new FocessSocket();
+        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+        ServerReceiver serverReceiver = (ServerReceiver) focessSocket.getReceiver();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+            serverReceiver.sendPacket("hello", new MessagePacket("world"));
+        });
+        FocessSocket client = new FocessSocket();
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", focessSocket.getLocalPort(), "hello", true, true));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        clientReceiver.register(MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Client received hello from server");
+            System.out.println("server send: " + packet.getMessage());
+            Assertions.assertEquals("world", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        clientReceiver.waitConnected();
+        clientReceiver.sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 2);
+        focessSocket.close();
+        client.close();
+    }
+
+    @Test
+    public void testFocessUDPSocket() throws Exception {
+        FocessUDPSocket focessSocket = new FocessUDPSocket();
+        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+        ServerReceiver serverReceiver = (ServerReceiver) focessSocket.getReceiver();
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        serverReceiver.register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+            serverReceiver.sendPacket("hello", new MessagePacket("world"));
+        });
+        FocessUDPSocket client = new FocessUDPSocket();
+        client.registerReceiver(new FocessClientReceiver(client, "localhost", "localhost", focessSocket.getLocalPort(), "hello", true, true));
+        ClientReceiver clientReceiver = (ClientReceiver) client.getReceiver();
+        clientReceiver.register(MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Client received hello from server");
+            System.out.println("server send: " + packet.getMessage());
+            Assertions.assertEquals("world", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        clientReceiver.waitConnected();
+        clientReceiver.sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 2);
+        focessSocket.close();
+        client.close();
+    }
+
+    @Test
     public void testRSA() {
         RSAKeypair keyPair = RSA.genRSAKeypair();
         byte[] bytes = new byte[1024];
@@ -210,6 +352,13 @@ public class NormalTest {
         byte[] encrypt = RSA.encryptRSA(bytes, keyPair.getPublicKey());
         byte[] decrypt = RSA.decryptRSA(encrypt, keyPair.getPrivateKey());
         Assertions.assertArrayEquals(bytes, decrypt);
+    }
+
+    @Test
+    public void testServerHeart() throws Exception {
+        FocessSocket focessSocket = new FocessSocket();
+        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+
     }
 
 }

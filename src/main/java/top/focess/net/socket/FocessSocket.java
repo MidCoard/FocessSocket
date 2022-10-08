@@ -107,7 +107,7 @@ public class FocessSocket extends BothSideSocket {
             try {
                 final java.net.Socket socket = new java.net.Socket(targetHost, targetPort);
                 final OutputStream outputStream = socket.getOutputStream();
-                if (((ClientReceiver) this.getReceiver()).isEncrypt()) {
+                if (((ClientReceiver) this.getReceiver()).isEncrypt() && !(packet instanceof ConnectPacket) && !(packet instanceof SidedConnectPacket)) {
                     PacketPreCodec codec = new PacketPreCodec();
                     codec.writeInt(-1);
                     codec.writeInt(((ClientReceiver) this.getReceiver()).getClientId());
@@ -133,7 +133,7 @@ public class FocessSocket extends BothSideSocket {
         }
     }
 
-    public boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket packet){
+    public boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket packet) {
         if (this.isClientSide())
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();

@@ -4,18 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import top.focess.net.PacketHandler;
-import top.focess.net.SimpleClient;
 import top.focess.net.packet.Packet;
 import top.focess.net.receiver.Receiver;
-import top.focess.net.receiver.ServerReceiver;
-import top.focess.scheduler.FocessScheduler;
-import top.focess.scheduler.Scheduler;
 import top.focess.util.Pair;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +29,20 @@ public abstract class ASocket implements Socket {
 
     public static boolean isDebug() {
         return debug;
+    }
+
+    private static @NotNull List<Method> getAllMethods(Class<?> c) {
+        List<Method> methods = Lists.newArrayList();
+        List<String> methodNames = Lists.newArrayList();
+        while (c != null) {
+            for (Method method : c.getDeclaredMethods())
+                if (!methodNames.contains(method.getName())) {
+                    methods.add(method);
+                    methodNames.add(method.getName());
+                }
+            c = c.getSuperclass();
+        }
+        return methods;
     }
 
     @Override
@@ -58,20 +66,6 @@ public abstract class ASocket implements Socket {
                         }
                     }
                 }
-    }
-
-    private static @NotNull List<Method> getAllMethods(Class<?> c) {
-        List<Method> methods = Lists.newArrayList();
-        List<String> methodNames = Lists.newArrayList();
-        while (c != null) {
-            for (Method method : c.getDeclaredMethods())
-                if (!methodNames.contains(method.getName())) {
-                    methods.add(method);
-                    methodNames.add(method.getName());
-                }
-            c = c.getSuperclass();
-        }
-        return methods;
     }
 
     @Override

@@ -209,6 +209,7 @@ public class PacketPreCodec {
 
     /**
      * Get the length of the packet
+     *
      * @return the length of the packet
      */
     public int length() {
@@ -280,6 +281,7 @@ public class PacketPreCodec {
 
     /**
      * Return the available size
+     *
      * @return the available size
      */
     public int available() {
@@ -288,6 +290,7 @@ public class PacketPreCodec {
 
     /**
      * Read a string
+     *
      * @return the string read from precodec or null if the string is null
      */
     @Nullable
@@ -303,6 +306,7 @@ public class PacketPreCodec {
 
     /**
      * Write a string
+     *
      * @param v the string
      */
     public void tryWriteString(@Nullable final String v) {
@@ -313,6 +317,7 @@ public class PacketPreCodec {
 
     /**
      * Write a boolean
+     *
      * @param v the boolean
      */
     public void writeBoolean(boolean v) {
@@ -321,6 +326,7 @@ public class PacketPreCodec {
 
     /**
      * Read a boolean
+     *
      * @return the boolean read from precodec
      */
     public boolean readBoolean() {
@@ -337,6 +343,7 @@ public class PacketPreCodec {
 
     /**
      * Push the data to the precodec
+     *
      * @param bytes the data
      * @see #push(byte[], int, int)
      * @see #push(byte[], int)

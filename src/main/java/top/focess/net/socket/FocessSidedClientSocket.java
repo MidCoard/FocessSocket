@@ -5,7 +5,6 @@ import com.google.common.primitives.Bytes;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.packet.Packet;
 import top.focess.net.packet.SidedConnectPacket;
-import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.FocessSidedClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.util.Pair;
@@ -14,8 +13,6 @@ import top.focess.util.RSA;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 public class FocessSidedClientSocket extends ClientSocket {
@@ -43,7 +40,7 @@ public class FocessSidedClientSocket extends ClientSocket {
                 PacketPreCodec codec = new PacketPreCodec();
                 codec.writeInt(-1);
                 codec.writeInt(this.getReceiver().getClientId());
-                codec.writeByteArray(RSA.encryptRSA(packetPreCodec.getBytes(),this.getReceiver().getKey()));
+                codec.writeByteArray(RSA.encryptRSA(packetPreCodec.getBytes(), this.getReceiver().getKey()));
                 outputStream.write(codec.getBytes());
             } else
                 outputStream.write(packetPreCodec.getBytes());

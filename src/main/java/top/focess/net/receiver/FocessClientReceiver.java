@@ -2,8 +2,6 @@ package top.focess.net.receiver;
 
 import top.focess.net.packet.*;
 import top.focess.net.socket.BothSideSocket;
-import top.focess.net.socket.FocessSocket;
-import top.focess.net.socket.FocessUDPSocket;
 import top.focess.scheduler.FocessScheduler;
 
 import java.time.Duration;

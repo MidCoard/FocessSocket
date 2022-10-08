@@ -8,15 +8,12 @@ import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
 import top.focess.net.packet.ConnectPacket;
 import top.focess.net.packet.ConnectedPacket;
-import top.focess.net.packet.Packet;
-import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
-import top.focess.net.socket.FocessUDPSocket;
 import top.focess.net.socket.BothSideSocket;
+import top.focess.net.socket.FocessUDPSocket;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class FocessUDPMultiReceiver extends FocessReceiver implements ServerMultiReceiver {
 

@@ -3,7 +3,7 @@ package top.focess.net.packet;
 /**
  * Used to tell client the connection is not lost.
  */
-public class ServerHeartPacket extends ServerPacket{
+public class ServerHeartPacket extends ServerPacket {
 
 
     public static final int PACKET_ID = 11;
@@ -11,6 +11,7 @@ public class ServerHeartPacket extends ServerPacket{
 
     /**
      * Constructs a ServerHeartPacket
+     *
      * @param time the server time
      */
     public ServerHeartPacket(long time) {

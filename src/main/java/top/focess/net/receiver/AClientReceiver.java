@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
-import top.focess.net.packet.*;
+import top.focess.net.packet.ConnectedPacket;
+import top.focess.net.packet.Packet;
+import top.focess.net.packet.ServerHeartPacket;
+import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.scheduler.FocessScheduler;
 import top.focess.util.RSA;
@@ -23,14 +26,11 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected final boolean serverHeart;
     protected final boolean encrypt;
     protected final FocessScheduler scheduler;
+    protected final RSAKeypair keypair;
     protected String token;
     protected int id;
     protected volatile boolean connected;
-
     protected long lastHeart;
-
-    protected final RSAKeypair keypair;
-
     protected String key;
 
     public AClientReceiver(FocessScheduler scheduler, final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
@@ -44,11 +44,11 @@ public abstract class AClientReceiver implements ClientReceiver {
             keypair = RSA.genRSAKeypair();
         else keypair = new RSAKeypair(null, null);
         if (this.serverHeart)
-            this.scheduler.runTimer(()->{
+            this.scheduler.runTimer(() -> {
                 if (this.connected)
                     if (System.currentTimeMillis() - this.lastHeart > 10 * 1000)
                         this.disconnect();
-            }, Duration.ZERO,Duration.ofSeconds(1));
+            }, Duration.ZERO, Duration.ofSeconds(1));
     }
 
     @Override
@@ -166,7 +166,7 @@ public abstract class AClientReceiver implements ClientReceiver {
     public void onServerHeart(final ServerHeartPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
-                System.out.println("C FocessSocket: client reject server " + this.name + " send heart from " + this.host + ":" + this.port +  " because of not connected");
+                System.out.println("C FocessSocket: client reject server " + this.name + " send heart from " + this.host + ":" + this.port + " because of not connected");
             return;
         }
         if (ASocket.isDebug())

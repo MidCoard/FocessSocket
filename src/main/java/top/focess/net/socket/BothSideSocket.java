@@ -1,15 +1,11 @@
 package top.focess.net.socket;
 
 import top.focess.net.SimpleClient;
-import top.focess.net.packet.*;
+import top.focess.net.packet.ClientPacket;
+import top.focess.net.packet.ServerPacket;
 import top.focess.net.receiver.Receiver;
-import top.focess.net.receiver.ServerReceiver;
-import top.focess.scheduler.FocessScheduler;
-import top.focess.scheduler.Scheduler;
 
-import java.time.Duration;
-
-public abstract class BothSideSocket extends ASocket{
+public abstract class BothSideSocket extends ASocket {
 
     protected int localPort;
 
@@ -17,10 +13,10 @@ public abstract class BothSideSocket extends ASocket{
 
     public abstract boolean sendServerPacket(SimpleClient client, String host, int port, ServerPacket serverPacket);
 
-    public boolean sendServerPacket(SimpleClient client, ServerPacket serverPacket){
+    public boolean sendServerPacket(SimpleClient client, ServerPacket serverPacket) {
         if (client == null)
             return false;
-        return this.sendServerPacket(client,client.getHost(),client.getPort(),serverPacket);
+        return this.sendServerPacket(client, client.getHost(), client.getPort(), serverPacket);
     }
 
     @Override

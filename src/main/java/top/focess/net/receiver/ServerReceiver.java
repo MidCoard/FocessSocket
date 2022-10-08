@@ -84,6 +84,7 @@ public interface ServerReceiver extends Receiver {
 
     /**
      * Get all the clients
+     *
      * @return all the clients
      */
     List<SimpleClient> getClients();
@@ -99,8 +100,8 @@ public interface ServerReceiver extends Receiver {
     /**
      * Send ServerPacket to the special client
      *
-     * @param id the client id
+     * @param id     the client id
      * @param packet the packet
      */
-     void sendPacket(int id, ServerPacket packet);
+    void sendPacket(int id, ServerPacket packet);
 }

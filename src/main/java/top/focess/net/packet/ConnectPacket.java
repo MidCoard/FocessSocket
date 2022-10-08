@@ -29,14 +29,14 @@ public class ConnectPacket extends ClientPacket {
     /**
      * Constructs a ConnectPacket
      *
-     * @param host the client host
-     * @param port the client port
-     * @param name the client name
+     * @param host        the client host
+     * @param port        the client port
+     * @param name        the client name
      * @param serverHeart whether the server need to send heart packet
-     * @param encrypt whether the server/client need to encrypt the packet
-     * @param key the key to encrypt the packet
+     * @param encrypt     whether the server/client need to encrypt the packet
+     * @param key         the key to encrypt the packet
      */
-    public ConnectPacket(String host, int port, String name,boolean serverHeart, boolean encrypt,@Nullable String key) {
+    public ConnectPacket(String host, int port, String name, boolean serverHeart, boolean encrypt, @Nullable String key) {
         super(-1, null);
         this.host = host;
         this.port = port;

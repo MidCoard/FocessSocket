@@ -7,6 +7,7 @@ public class HeartPacket extends ClientPacket {
 
     public static final int PACKET_ID = 2;
     private final long time;
+
     /**
      * Constructs a HeartPacket
      *

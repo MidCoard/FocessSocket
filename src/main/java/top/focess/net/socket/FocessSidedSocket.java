@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
-import java.util.Arrays;
 
 public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
 

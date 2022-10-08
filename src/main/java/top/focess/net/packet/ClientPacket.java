@@ -6,14 +6,13 @@ package top.focess.net.packet;
 public abstract class ClientPacket extends Packet {
 
     /**
-     * The client id
-     */
-    private int clientId;
-
-    /**
      * The client token
      */
     private final String token;
+    /**
+     * The client id
+     */
+    private int clientId;
 
     /**
      * Constructs a ClientPacket
@@ -30,11 +29,11 @@ public abstract class ClientPacket extends Packet {
         return this.clientId;
     }
 
-    public String getToken() {
-        return this.token;
-    }
-
     public void setClientId(int clientId) {
         this.clientId = clientId;
+    }
+
+    public String getToken() {
+        return this.token;
     }
 }

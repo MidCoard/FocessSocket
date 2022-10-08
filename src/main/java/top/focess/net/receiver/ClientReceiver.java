@@ -6,10 +6,7 @@ import top.focess.scheduler.Scheduler;
 import top.focess.scheduler.Task;
 import top.focess.scheduler.ThreadPoolScheduler;
 
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The socket receiver for client.
@@ -89,24 +86,28 @@ public interface ClientReceiver extends Receiver {
 
     /**
      * Indicate whether the server need to send heart packet
+     *
      * @return true if the server need to send heart packet, false otherwise
      */
     boolean isServerHeart();
 
     /**
      * Indicate whether the server/client need to encrypt the packet
+     *
      * @return true if the server/client need to encrypt the packet, false otherwise
      */
     boolean isEncrypt();
 
     /**
      * Get the private key to decrypt the packet
+     *
      * @return the private key to decrypt the packet
      */
     String getPrivateKey();
 
     /**
      * Get the public key to encrypt the packet
+     *
      * @return the public key to encrypt the packet
      */
     String getKey();
@@ -123,6 +124,7 @@ public interface ClientReceiver extends Receiver {
 
     /**
      * Wait for the client to connect to a server
+     *
      * @param time the time to wait
      * @param unit the unit of the time
      * @return true if the client has connected to a server in the time, false otherwise
