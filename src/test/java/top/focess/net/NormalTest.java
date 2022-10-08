@@ -480,4 +480,16 @@ public class NormalTest {
         focessUDPClientSocket2.close();
     }
 
+    @Test
+    public void testDisconnectedHandler() throws Exception{
+        FocessSidedSocket socket = new FocessSidedSocket(1234);
+        FocessSidedClientSocket focessSidedClientSocket = new FocessSidedClientSocket("localhost",1234,"focess", true, true);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        focessSidedClientSocket.getReceiver().setDisconnectedHandler(atomicInteger::incrementAndGet);
+        focessSidedClientSocket.getReceiver().waitConnected();
+        socket.close();
+        Thread.sleep(15000);
+        Assertions.assertEquals(atomicInteger.get(),1);
+    }
+
 }
