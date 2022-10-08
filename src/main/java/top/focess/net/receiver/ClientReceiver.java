@@ -1,5 +1,6 @@
 package top.focess.net.receiver;
 
+import top.focess.net.DisconnectedHandler;
 import top.focess.net.PackHandler;
 import top.focess.net.packet.Packet;
 import top.focess.scheduler.Scheduler;
@@ -138,4 +139,6 @@ public interface ClientReceiver extends Receiver {
             return false;
         }
     }
+
+    void setDisconnectedHandler(DisconnectedHandler disconnectedHandler);
 }

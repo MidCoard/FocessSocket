@@ -2,6 +2,7 @@ package top.focess.net.receiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import top.focess.net.DisconnectedHandler;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.packet.ConnectedPacket;
@@ -32,6 +33,7 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected volatile boolean connected;
     protected long lastHeart;
     protected String key;
+    protected DisconnectedHandler disconnectedHandler;
 
     public AClientReceiver(FocessScheduler scheduler, final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         this.scheduler = scheduler;
@@ -121,6 +123,8 @@ public abstract class AClientReceiver implements ClientReceiver {
     @Override
     public void disconnect() {
         this.connected = false;
+        if (this.disconnectedHandler != null)
+            this.disconnectedHandler.handle();
     }
 
     @Override
@@ -172,5 +176,10 @@ public abstract class AClientReceiver implements ClientReceiver {
         if (ASocket.isDebug())
             System.out.println("C FocessSocket: client accept server " + this.name + " send heart from " + this.host + ":" + this.port);
         this.lastHeart = System.currentTimeMillis();
+    }
+
+    @Override
+    public void setDisconnectedHandler(DisconnectedHandler disconnectedHandler) {
+        this.disconnectedHandler = disconnectedHandler;
     }
 }
