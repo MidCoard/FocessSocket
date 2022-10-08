@@ -356,9 +356,128 @@ public class NormalTest {
 
     @Test
     public void testServerHeart() throws Exception {
-        FocessSocket focessSocket = new FocessSocket();
-        focessSocket.registerReceiver(new FocessReceiver(focessSocket));
+        FocessServerSocket focessServerSocket = new FocessServerSocket(1234);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        focessServerSocket.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        FocessClientSocket focessClientSocket = new FocessClientSocket("localhost", "localhost", focessServerSocket.getLocalPort(), "hello", true, true);
+        focessClientSocket.getReceiver().waitConnected();
+        focessClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        focessServerSocket.close();
+        FocessServerSocket focessServerSocket2 = new FocessServerSocket(1234);
+        focessServerSocket2.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        Thread.sleep(15000);
+        focessClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        Assertions.assertEquals(atomicInteger.get(), 2);
+        focessServerSocket2.close();
+        focessClientSocket.close();
+    }
 
+    @Test
+    public void testServerHeart2() throws Exception {
+        FocessUDPServerSocket socket = new FocessUDPServerSocket(1234);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        socket.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        FocessUDPClientSocket client = new FocessUDPClientSocket("localhost", "localhost", socket.getLocalPort(), "hello", true, true);
+        client.getReceiver().waitConnected();
+        client.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(atomicInteger.get(), 1);
+        socket.close();
+        FocessUDPServerSocket socket2 = new FocessUDPServerSocket(1234);
+        socket2.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        Thread.sleep(15000);
+        client.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        Assertions.assertEquals(atomicInteger.get(), 2);
+        socket2.close();
+        client.close();
+    }
+
+    @Test
+    public void testServerHeart3() throws Exception {
+        FocessSidedSocket focessSidedSocket = new FocessSidedSocket(1234);
+        focessSidedSocket.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+        });
+        FocessSidedClientSocket focessSidedClientSocket = new FocessSidedClientSocket("localhost", focessSidedSocket.getLocalPort(), "hello", true, true);
+        focessSidedClientSocket.getReceiver().waitConnected();
+        focessSidedClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        focessSidedSocket.close();
+        FocessSidedSocket focessSidedSocket2 = new FocessSidedSocket(1234);
+        focessSidedSocket2.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+        });
+        Thread.sleep(15000);
+        focessSidedClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        focessSidedSocket2.close();
+        focessSidedClientSocket.close();
+    }
+
+    @Test
+    public void testMultiServer() throws Exception {
+        FocessUDPServerMultiSocket focessUDPServerMultiSocket = new FocessUDPServerMultiSocket(1234);
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        focessUDPServerMultiSocket.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        FocessUDPClientSocket focessUDPClientSocket = new FocessUDPClientSocket("localhost", "localhost", focessUDPServerMultiSocket.getLocalPort(), "hello", true, true);
+        FocessUDPClientSocket focessUDPClientSocket2 = new FocessUDPClientSocket("localhost", "localhost", focessUDPServerMultiSocket.getLocalPort(), "hello", true, true);
+        focessUDPClientSocket.getReceiver().waitConnected();
+        focessUDPClientSocket2.getReceiver().waitConnected();
+        focessUDPClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        focessUDPClientSocket2.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(4000);
+        Assertions.assertEquals(focessUDPServerMultiSocket.getReceiver().getClients().size(), 2);
+        Assertions.assertEquals(atomicInteger.get(), 2);
+        focessUDPServerMultiSocket.close();
+        FocessUDPServerMultiSocket focessUDPServerMultiSocket2 = new FocessUDPServerMultiSocket(1234);
+        focessUDPServerMultiSocket2.getReceiver().register("hello", MessagePacket.class, (clientId, packet) -> {
+            System.out.println("Server received hello from " + clientId);
+            System.out.println("client send: " + packet.getMessage());
+            Assertions.assertEquals("hello", packet.getMessage());
+            atomicInteger.incrementAndGet();
+        });
+        Thread.sleep(15000);
+        focessUDPClientSocket.getReceiver().sendPacket(new MessagePacket("hello"));
+        focessUDPClientSocket2.getReceiver().sendPacket(new MessagePacket("hello"));
+        Thread.sleep(2000);
+        Assertions.assertEquals(focessUDPServerMultiSocket2.getReceiver().getClients().size(), 2);
+        Assertions.assertEquals(atomicInteger.get(), 4);
+        focessUDPServerMultiSocket2.close();
+        focessUDPClientSocket.close();
+        focessUDPClientSocket2.close();
     }
 
 }

@@ -4,14 +4,14 @@ import top.focess.net.IllegalPortException;
 import top.focess.net.receiver.FocessReceiver;
 import top.focess.net.receiver.ServerReceiver;
 
-public class FocessServerSocket extends FocessSocket {
+public class FocessUDPServerSocket extends FocessUDPSocket {
 
-    public FocessServerSocket() throws IllegalPortException {
+    public FocessUDPServerSocket() throws IllegalPortException {
         super();
         this.registerReceiver(new FocessReceiver(this));
     }
 
-    public FocessServerSocket(int port) throws IllegalPortException {
+    public FocessUDPServerSocket(int port) throws IllegalPortException {
         super(port);
         this.registerReceiver(new FocessReceiver(this));
     }
