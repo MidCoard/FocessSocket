@@ -14,7 +14,15 @@ public class FocessSidedClientReceiver extends AClientReceiver {
 
     private final FocessSidedClientSocket socket;
 
+    public FocessSidedClientReceiver(FocessSidedClientSocket socket, String name) {
+        this(socket, name, false, false);
+    }
+
     public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket socket, final String name, final boolean serverHeart, final boolean encrypt) {
+        this(socket, name, serverHeart, encrypt, Duration.ofMillis(100));
+    }
+
+    public FocessSidedClientReceiver(@NotNull final FocessSidedClientSocket socket, final String name, final boolean serverHeart, final boolean encrypt, final Duration sendDuration) {
         super(new FocessScheduler("FocessSidedClientReceiver"), socket.getHost(), socket.getPort(), name, serverHeart, encrypt);
         this.socket = socket;
         this.scheduler.runTimer(() -> {
@@ -30,7 +38,7 @@ public class FocessSidedClientReceiver extends AClientReceiver {
                     packet = new WaitPacket(this.id, this.token);
                 socket.sendPacket(packet);
             }
-        }, Duration.ZERO, Duration.ofMillis(100));
+        }, Duration.ZERO, sendDuration);
     }
 
     @Override

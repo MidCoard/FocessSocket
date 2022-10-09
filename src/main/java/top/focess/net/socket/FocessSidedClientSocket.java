@@ -13,13 +13,19 @@ import top.focess.util.RSA;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.List;
 
 public class FocessSidedClientSocket extends ClientSocket {
 
-    public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
+    public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt, Duration sendDuration) {
         super(host, port);
-        super.registerReceiver(new FocessSidedClientReceiver(this, name, serverHeart, encrypt));
+        super.registerReceiver(new FocessSidedClientReceiver(this, name, serverHeart, encrypt, sendDuration));
+    }
+
+
+    public FocessSidedClientSocket(final String host, final int port, String name, boolean serverHeart, boolean encrypt) {
+        this(host, port, name, serverHeart, encrypt, Duration.ofMillis(100));
     }
 
     public FocessSidedClientSocket(final String host, final int port, String name) {
