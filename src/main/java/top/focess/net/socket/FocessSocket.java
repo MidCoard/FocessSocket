@@ -2,7 +2,6 @@ package top.focess.net.socket;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Bytes;
-import sun.nio.ch.ThreadPool;
 import top.focess.net.IllegalPortException;
 import top.focess.net.PacketPreCodec;
 import top.focess.net.SimpleClient;
