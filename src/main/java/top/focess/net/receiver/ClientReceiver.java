@@ -141,6 +141,4 @@ public interface ClientReceiver extends Receiver {
             return false;
         }
     }
-
-    void setDisconnectedHandler(DisconnectedHandler disconnectedHandler);
 }

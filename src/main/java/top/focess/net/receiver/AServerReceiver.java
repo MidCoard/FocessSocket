@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import top.focess.net.DisconnectedHandler;
 import top.focess.net.PackHandler;
 import top.focess.net.PacketHandler;
 import top.focess.net.SimpleClient;
@@ -31,6 +32,7 @@ public abstract class AServerReceiver implements ServerReceiver {
     protected final Scheduler scheduler;
     protected final Socket socket;
     protected final AtomicInteger defaultClientId = new AtomicInteger(0);
+    private DisconnectedHandler disconnectedHandler;
 
     public AServerReceiver(Socket socket) {
         this.socket = socket;
@@ -39,7 +41,7 @@ public abstract class AServerReceiver implements ServerReceiver {
             for (final SimpleClient simpleClient : this.clientInfos.values()) {
                 final long time = this.lastHeart.getOrDefault(simpleClient.getId(), 0L);
                 if (System.currentTimeMillis() - time > 10 * 1000)
-                    this.clientInfos.remove(simpleClient.getId());
+                    this.disconnect(simpleClient.getId());
             }
         }, Duration.ZERO, Duration.ofSeconds(1));
         this.scheduler.runTimer(() -> {
@@ -106,8 +108,10 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @Override
-    public synchronized void disconnect(String client) {
-        this.clientInfos.values().removeIf(simpleClient -> simpleClient.getName().equals(client));
+    public void disconnect(String client) {
+        for (final SimpleClient simpleClient : this.clientInfos.values())
+            if (simpleClient.getName().equals(client))
+                this.disconnect(simpleClient.getId());
     }
 
     @PacketHandler
@@ -164,5 +168,12 @@ public abstract class AServerReceiver implements ServerReceiver {
 
     public void disconnect(final int clientId) {
         this.clientInfos.remove(clientId);
+        if (this.disconnectedHandler != null)
+            this.disconnectedHandler.handle(clientId);
+    }
+
+    @Override
+    public void setDisconnectedHandler(DisconnectedHandler disconnectedHandler) {
+        this.disconnectedHandler = disconnectedHandler;
     }
 }

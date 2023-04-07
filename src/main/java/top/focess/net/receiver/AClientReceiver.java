@@ -126,7 +126,7 @@ public abstract class AClientReceiver implements ClientReceiver {
     public void disconnect() {
         this.connected = false;
         if (this.disconnectedHandler != null)
-            this.disconnectedHandler.handle();
+            this.disconnectedHandler.handle(this.id);
     }
 
     @Override

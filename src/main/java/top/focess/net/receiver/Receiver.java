@@ -1,6 +1,7 @@
 package top.focess.net.receiver;
 
 
+import top.focess.net.DisconnectedHandler;
 import top.focess.net.PackHandler;
 
 /**
@@ -37,4 +38,6 @@ public interface Receiver {
      * @return true if it is server side, false otherwise
      */
     boolean isServerSide();
+
+    void setDisconnectedHandler(DisconnectedHandler disconnectedHandler);
 }

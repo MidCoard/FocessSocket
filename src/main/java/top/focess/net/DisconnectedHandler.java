@@ -7,5 +7,5 @@ package top.focess.net;
  */
 public interface DisconnectedHandler {
 
-    void handle();
+    void handle(int clientId);
 }
