@@ -119,38 +119,38 @@ public abstract class AServerReceiver implements ServerReceiver {
         synchronized (this) {
             if (this.clientInfos.get(packet.getClientId()) == null) {
                 if (ASocket.isDebug())
-                    System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " send heart because of client not exist");
+                    System.out.println("S FocessSocket " + this + ": server reject client " + packet.getClientId() + " send heart because of client not exist");
                 return;
             }
         }
         if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send heart");
+            System.out.println("S FocessSocket " + this + ": client " + packet.getClientId() + " send heart");
         final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
         if (simpleClient.getToken().equals(packet.getToken()) && System.currentTimeMillis() + 5 * 1000 > packet.getTime()) {
             if (ASocket.isDebug())
-                System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " send heart");
+                System.out.println("S FocessSocket " + this + ": server accept client " + packet.getClientId() + " send heart");
             this.lastHeart.put(simpleClient.getId(), packet.getTime());
         } else if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " heart because of token error");
+            System.out.println("S FocessSocket " + this + ": server reject client " + packet.getClientId() + " heart because of token error");
     }
 
     @PacketHandler
     public synchronized void onClientPacket(@NotNull final ClientPackPacket packet) {
         if (this.clientInfos.get(packet.getClientId()) == null) {
             if (ASocket.isDebug())
-                System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of client not exist");
+                System.out.println("S FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of client not exist");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send client packet");
+            System.out.println("S FocessSocket " + this + ": client " + packet.getClientId() + " send client packet");
         final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
         if (simpleClient.getToken().equals(packet.getToken())) {
             if (ASocket.isDebug())
-                System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " send client packet");
+                System.out.println("S FocessSocket " + this + ": server accept client " + packet.getClientId() + " send client packet");
             for (final PackHandler packHandler : this.packHandlers.getOrDefault(simpleClient.getName(), Maps.newHashMap()).getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
                 packHandler.handle(simpleClient.getId(), packet.getPacket());
         } else if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of token conflict");
+            System.out.println("S FocessSocket " + this + ": server reject client " + packet.getClientId() + " client packet because of token conflict");
     }
 
     @Override

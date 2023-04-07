@@ -45,7 +45,7 @@ public class FocessSidedReceiver extends AServerReceiver {
     @PacketHandler
     public Packet onWait(@NotNull final WaitPacket packet) {
         synchronized (this) {
-            if (this.clientInfos.get(packet.getClientId()) != null) {
+            if (this.clientInfos.get(packet.getClientId()) == null) {
                 if (ASocket.isDebug())
                     System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " send wait because of client not exist");
                 return null;
