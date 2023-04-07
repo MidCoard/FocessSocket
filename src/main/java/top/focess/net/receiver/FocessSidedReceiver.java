@@ -67,7 +67,7 @@ public class FocessSidedReceiver extends AServerReceiver {
     public synchronized void onDisconnect(@NotNull final DisconnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("P FocessSocket " + this + ": client " + packet.getClientId() + " try disconnecting");
-        if (this.clientInfos.get(packet.getClientId()) != null) {
+        if (this.clientInfos.get(packet.getClientId()) == null) {
             if (ASocket.isDebug())
                 System.out.println("P FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
             return;
