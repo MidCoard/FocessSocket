@@ -25,7 +25,7 @@ public class FocessSidedReceiver extends AServerReceiver {
     @PacketHandler
     public synchronized ConnectedPacket onConnect(final SidedConnectPacket packet) {
         if (ASocket.isDebug())
-            System.out.println("P FocessSocket: client " + packet.getName() + " connect");
+            System.out.println("P FocessSocket: client " + packet.getName() + " try connecting");
         for (final SimpleClient simpleClient : this.clientInfos.values())
             if (simpleClient.getName().equals(packet.getName())) {
                 if (ASocket.isDebug())
@@ -43,36 +43,43 @@ public class FocessSidedReceiver extends AServerReceiver {
 
     @Nullable
     @PacketHandler
-    public synchronized Packet onWait(@NotNull final WaitPacket packet) {
+    public Packet onWait(@NotNull final WaitPacket packet) {
+        synchronized (this) {
+            if (this.clientInfos.get(packet.getClientId()) != null) {
+                if (ASocket.isDebug())
+                    System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " send wait because of client not exist");
+                return null;
+            }
+        }
         if (ASocket.isDebug())
             System.out.println("P FocessSocket: client " + packet.getClientId() + " send wait");
-        if (this.clientInfos.get(packet.getClientId()) != null) {
-            final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
-            if (simpleClient.getToken().equals(packet.getToken())) {
-                if (ASocket.isDebug())
-                    System.out.println("P FocessSocket: server accept client " + packet.getClientId() + " wait");
-                return this.packets.getOrDefault(simpleClient.getName(), Queues.newConcurrentLinkedQueue()).poll();
-            } else if (ASocket.isDebug())
-                System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " wait because of token error");
+        final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
+        if (simpleClient.getToken().equals(packet.getToken())) {
+            if (ASocket.isDebug())
+                System.out.println("P FocessSocket: server accept client " + packet.getClientId() + " wait");
+            return this.packets.getOrDefault(simpleClient.getName(), Queues.newConcurrentLinkedQueue()).poll();
         } else if (ASocket.isDebug())
-            System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " send wait because of client not exist");
+            System.out.println("P FocessSocket: server reject client " + packet.getClientId() + " wait because of token error");
         return null;
     }
 
     @PacketHandler
     public synchronized void onDisconnect(@NotNull final DisconnectPacket packet) {
         if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " disconnect");
+            System.out.println("P FocessSocket " + this + ": client " + packet.getClientId() + " try disconnecting");
         if (this.clientInfos.get(packet.getClientId()) != null) {
-            final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
-            if (simpleClient.getToken().equals(packet.getToken())) {
-                if (ASocket.isDebug())
-                    System.out.println("FocessSocket " + this + ": server accept client " + packet.getClientId() + " disconnect");
-                this.disconnect(packet.getClientId());
-            } else if (ASocket.isDebug())
-                System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of token conflict");
+            if (ASocket.isDebug())
+                System.out.println("P FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
+            return;
+        }
+        final SimpleClient simpleClient = this.clientInfos.get(packet.getClientId());
+        if (simpleClient.getToken().equals(packet.getToken())) {
+            if (ASocket.isDebug())
+                System.out.println("P FocessSocket " + this + ": server accept client " + packet.getClientId() + " disconnect");
+            this.disconnect(packet.getClientId());
         } else if (ASocket.isDebug())
-            System.out.println("FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of client not exist");
+            System.out.println("P FocessSocket " + this + ": server reject client " + packet.getClientId() + " disconnect because of token conflict");
+
     }
 
     public void sendPacket(final String client, final Packet packet) {

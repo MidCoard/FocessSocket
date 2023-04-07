@@ -22,7 +22,7 @@ public class FocessMultiReceiver extends FocessReceiver implements ServerMultiRe
     }
 
     @PacketHandler
-    public void onConnect(@NotNull final ConnectPacket packet) {
+    public synchronized void onConnect(@NotNull final ConnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("SM FocessSocket: server accept client " + packet.getName() + " connect from " + packet.getHost() + ":" + packet.getPort());
         final SimpleClient simpleClient = new SimpleClient(packet.getHost(), packet.getPort(), this.defaultClientId.incrementAndGet(), packet.getName(), generateToken(), packet.isServerHeart(), packet.isEncrypt(), packet.getKey());

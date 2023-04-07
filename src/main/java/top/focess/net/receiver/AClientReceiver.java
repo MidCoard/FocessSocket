@@ -163,11 +163,13 @@ public abstract class AClientReceiver implements ClientReceiver {
     }
 
     @PacketHandler
-    public synchronized void onServerPacket(final ServerPackPacket packet) {
-        if (!this.connected) {
-            if (ASocket.isDebug())
-                System.out.println("C FocessSocket: client reject client " + this.name + " receive packet from " + this.host + ":" + this.port + " because of not connected");
-            return;
+    public void onServerPacket(final ServerPackPacket packet) {
+        synchronized (this) {
+            if (!this.connected) {
+                if (ASocket.isDebug())
+                    System.out.println("C FocessSocket: client reject client " + this.name + " receive packet from " + this.host + ":" + this.port + " because of not connected");
+                return;
+            }
         }
         if (ASocket.isDebug())
             System.out.println("C FocessSocket: client accept client " + this.name + " receive packet from " + this.host + ":" + this.port);
