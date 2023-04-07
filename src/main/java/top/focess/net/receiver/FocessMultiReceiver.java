@@ -12,16 +12,13 @@ import top.focess.net.packet.Packet;
 import top.focess.net.packet.ServerPackPacket;
 import top.focess.net.socket.ASocket;
 import top.focess.net.socket.BothSideSocket;
-import top.focess.net.socket.FocessUDPSocket;
 
 import java.util.Collections;
 import java.util.List;
 
-public class FocessUDPMultiReceiver extends FocessReceiver implements ServerMultiReceiver {
-
-
-    public FocessUDPMultiReceiver(final FocessUDPSocket focessUDPSocket) {
-        super(focessUDPSocket);
+public class FocessMultiReceiver extends FocessReceiver implements ServerMultiReceiver{
+    public FocessMultiReceiver(BothSideSocket socket) {
+        super(socket);
     }
 
     @PacketHandler

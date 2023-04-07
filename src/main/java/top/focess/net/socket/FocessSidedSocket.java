@@ -9,6 +9,7 @@ import top.focess.net.packet.Packet;
 import top.focess.net.packet.ServerPacket;
 import top.focess.net.receiver.FocessSidedReceiver;
 import top.focess.net.receiver.Receiver;
+import top.focess.scheduler.ThreadPoolScheduler;
 import top.focess.util.Pair;
 import top.focess.util.RSA;
 
@@ -17,11 +18,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
 
     private final int localPort;
     private final ServerSocket server;
+
+    private final ThreadPoolScheduler scheduler = new ThreadPoolScheduler(10, false, "FocessSidedSocket", true);
 
     public FocessSidedSocket(final int localPort) throws IllegalPortException {
         this.localPort = localPort;
@@ -34,49 +38,8 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
         final Thread thread = new Thread(() -> {
             while (!this.server.isClosed()) {
                 try {
-                    final java.net.Socket socket = this.server.accept();
-                    final InputStream inputStream = socket.getInputStream();
-                    final byte[] buffer = new byte[1024];
-                    final PacketPreCodec packetPreCodec = new PacketPreCodec();
-                    int length;
-                    while ((length = inputStream.read(buffer)) != -1)
-                        packetPreCodec.push(buffer, length);
-                    int packetId = packetPreCodec.readInt();
-                    if (packetId == -1) {
-                        SimpleClient client = this.getReceiver().getClient(packetPreCodec.readInt());
-                        if (client == null || !client.isEncrypt()) {
-                            socket.shutdownOutput();
-                            continue;
-                        }
-                        byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
-                        packetPreCodec.clear();
-                        packetPreCodec.push(data);
-                    } else packetPreCodec.reset();
-                    final Packet packet = packetPreCodec.readPacket();
-                    if (isDebug())
-                        System.out.println("P FocessSocket: receive packet: " + packet);
-                    final OutputStream outputStream = socket.getOutputStream();
-                    if (packet instanceof ClientPacket)
-                        for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
-                            final Method method = pair.getValue();
-                            try {
-                                method.setAccessible(true);
-                                final Object o = method.invoke(pair.getKey(), packet);
-                                if (isDebug())
-                                    System.out.println("P FocessSocket: send packet: " + o);
-                                if (o instanceof ServerPacket) {
-                                    final PacketPreCodec handler = new PacketPreCodec();
-                                    handler.writePacket((Packet) o);
-                                    if (this.getReceiver().getClient(((ClientPacket) packet).getClientId()).isEncrypt())
-                                        outputStream.write(RSA.encryptRSA(handler.getBytes(), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getKey()));
-                                    else
-                                        outputStream.write(handler.getBytes());
-                                    outputStream.flush();
-                                }
-                            } catch (final Exception ignored) {
-                            }
-                        }
-                    socket.shutdownOutput();
+                    final Socket socket = this.server.accept();
+                    scheduler.run(() -> handle(socket));
                 } catch (final Exception e) {
                     if (this.server.isClosed())
                         return;
@@ -89,6 +52,7 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
     @Override
     public void close() {
         super.close();
+        this.scheduler.close();
         try {
             this.server.close();
         } catch (final IOException ignored) {
@@ -102,6 +66,54 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
 
     public int getLocalPort() {
         return this.localPort;
+    }
+
+    private void handle(Socket socket) {
+        try {
+            final InputStream inputStream = socket.getInputStream();
+            final byte[] buffer = new byte[1024];
+            final PacketPreCodec packetPreCodec = new PacketPreCodec();
+            int length;
+            while ((length = inputStream.read(buffer)) != -1)
+                packetPreCodec.push(buffer, length);
+            int packetId = packetPreCodec.readInt();
+            if (packetId == -1) {
+                SimpleClient client = this.getReceiver().getClient(packetPreCodec.readInt());
+                if (client == null || !client.isEncrypt()) {
+                    socket.shutdownOutput();
+                    return;
+                }
+                byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
+                packetPreCodec.clear();
+                packetPreCodec.push(data);
+            } else packetPreCodec.reset();
+            final Packet packet = packetPreCodec.readPacket();
+            if (isDebug())
+                System.out.println("P FocessSocket: receive packet: " + packet);
+            final OutputStream outputStream = socket.getOutputStream();
+            if (packet instanceof ClientPacket)
+                for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
+                    final Method method = pair.getValue();
+                    try {
+                        method.setAccessible(true);
+                        final Object o = method.invoke(pair.getKey(), packet);
+                        if (isDebug())
+                            System.out.println("P FocessSocket: send packet: " + o);
+                        if (o instanceof ServerPacket) {
+                            final PacketPreCodec handler = new PacketPreCodec();
+                            handler.writePacket((Packet) o);
+                            if (this.getReceiver().getClient(((ClientPacket) packet).getClientId()).isEncrypt())
+                                outputStream.write(RSA.encryptRSA(handler.getBytes(), this.getReceiver().getClient(((ClientPacket) packet).getClientId()).getKey()));
+                            else
+                                outputStream.write(handler.getBytes());
+                            outputStream.flush();
+                        }
+                    } catch (final Exception ignored) {
+                    }
+                }
+            socket.shutdownOutput();
+        } catch (Exception ignored) {
+        }
     }
 
 }

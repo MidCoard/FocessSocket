@@ -35,6 +35,8 @@ public abstract class AClientReceiver implements ClientReceiver {
     protected String key;
     protected DisconnectedHandler disconnectedHandler;
 
+    private final Object waitLock = new Object();
+
     public AClientReceiver(FocessScheduler scheduler, final String host, final int port, final String name, final boolean serverHeart, final boolean encrypt) {
         this.scheduler = scheduler;
         this.host = host;
@@ -128,17 +130,21 @@ public abstract class AClientReceiver implements ClientReceiver {
     }
 
     @Override
-    public void waitConnected() {
-        while (!this.connected) {
+    public boolean waitConnected() {
+        synchronized (this.waitLock) {
+            if (this.connected)
+                return true;
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {
+                this.waitLock.wait();
+            } catch (InterruptedException e) {
+                return false;
             }
         }
+        return this.connected;
     }
 
     @PacketHandler
-    public void onConnected(final ConnectedPacket packet) {
+    public synchronized void onConnected(final ConnectedPacket packet) {
         if (this.connected) {
             if (ASocket.isDebug())
                 System.out.println("C FocessSocket: client reject client " + this.name + " connect from " + this.host + ":" + this.port + " because of already connected");
@@ -151,10 +157,13 @@ public abstract class AClientReceiver implements ClientReceiver {
         this.key = packet.getKey();
         this.lastHeart = System.currentTimeMillis();
         this.connected = true;
+        synchronized (this.waitLock) {
+            this.waitLock.notifyAll();
+        }
     }
 
     @PacketHandler
-    public void onServerPacket(final ServerPackPacket packet) {
+    public synchronized void onServerPacket(final ServerPackPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
                 System.out.println("C FocessSocket: client reject client " + this.name + " receive packet from " + this.host + ":" + this.port + " because of not connected");
@@ -167,7 +176,7 @@ public abstract class AClientReceiver implements ClientReceiver {
     }
 
     @PacketHandler
-    public void onServerHeart(final ServerHeartPacket packet) {
+    public synchronized void onServerHeart(final ServerHeartPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
                 System.out.println("C FocessSocket: client reject server " + this.name + " send heart from " + this.host + ":" + this.port + " because of not connected");

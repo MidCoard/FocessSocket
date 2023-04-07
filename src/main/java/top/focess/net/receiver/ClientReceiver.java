@@ -120,8 +120,10 @@ public interface ClientReceiver extends Receiver {
 
     /**
      * Wait for the client to connect to a server
+     *
+     * @return true if the client has connected to a server, false if there is an exception
      */
-    void waitConnected();
+    boolean waitConnected();
 
     /**
      * Wait for the client to connect to a server

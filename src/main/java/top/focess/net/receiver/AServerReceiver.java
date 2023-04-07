@@ -106,12 +106,12 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @Override
-    public void disconnect(String client) {
+    public synchronized void disconnect(String client) {
         this.clientInfos.values().removeIf(simpleClient -> simpleClient.getName().equals(client));
     }
 
     @PacketHandler
-    public void onHeart(@NotNull final HeartPacket packet) {
+    public synchronized void onHeart(@NotNull final HeartPacket packet) {
         if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send heart");
         if (this.clientInfos.get(packet.getClientId()) != null) {
@@ -127,7 +127,7 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @PacketHandler
-    public void onClientPacket(@NotNull final ClientPackPacket packet) {
+    public synchronized void onClientPacket(@NotNull final ClientPackPacket packet) {
         if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " send client packet");
         if (this.clientInfos.get(packet.getClientId()) != null) {

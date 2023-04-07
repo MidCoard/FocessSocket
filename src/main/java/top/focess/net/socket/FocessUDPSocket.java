@@ -9,6 +9,7 @@ import top.focess.net.packet.*;
 import top.focess.net.receiver.ClientReceiver;
 import top.focess.net.receiver.Receiver;
 import top.focess.net.receiver.ServerReceiver;
+import top.focess.scheduler.ThreadPoolScheduler;
 import top.focess.util.Pair;
 import top.focess.util.RSA;
 
@@ -22,7 +23,7 @@ import java.net.SocketException;
 public class FocessUDPSocket extends BothSideSocket {
 
     private final DatagramSocket socket;
-    private final DatagramPacket packet;
+    private final ThreadPoolScheduler scheduler = new ThreadPoolScheduler(10, false, "FocessUDPSocket", true);
 
     public FocessUDPSocket() throws IllegalPortException {
         this(0);
@@ -35,49 +36,14 @@ public class FocessUDPSocket extends BothSideSocket {
         } catch (final SocketException e) {
             throw new IllegalPortException(port);
         }
-        this.packet = new DatagramPacket(new byte[1024 * 1024], 1024 * 1024);
         final Thread thread = new Thread(() -> {
             while (!this.socket.isClosed()) {
                 try {
-                    this.socket.receive(this.packet);
-                    final PacketPreCodec packetPreCodec = new PacketPreCodec();
-                    if (this.isServerSide()) {
-                        packetPreCodec.push(this.packet.getData(), this.packet.getOffset(), this.packet.getLength());
-                        int packetId = packetPreCodec.readInt();
-                        if (packetId == -1) {
-                            SimpleClient client = ((ServerReceiver) this.getReceiver()).getClient(packetPreCodec.readInt());
-                            if (client == null || !client.isEncrypt())
-                                continue;
-                            byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
-                            packetPreCodec.clear();
-                            packetPreCodec.push(data);
-                        } else packetPreCodec.reset();
-                    } else if (this.isClientSide()) {
-                        if (!((ClientReceiver) this.getReceiver()).isEncrypt())
-                            packetPreCodec.push(this.packet.getData(), this.packet.getOffset(), this.packet.getLength());
-                        else {
-                            byte[] data = Bytes.toArray(Bytes.asList(this.packet.getData()).subList(this.packet.getOffset(), this.packet.getOffset() + this.packet.getLength()));
-                            packetPreCodec.push(RSA.decryptRSA(data, ((ClientReceiver) this.getReceiver()).getPrivateKey()));
-                        }
-                    }
-                    Packet packet = packetPreCodec.readPacket();
-                    if (isDebug())
-                        if (this.isServerSide())
-                            System.out.println("S FocessSocket: receive packet: " + packet);
-                        else if (this.isClientSide())
-                            System.out.println("SC FocessSocket: receive packet: " + packet);
-                    if (packet instanceof SidedConnectPacket) {
-                        final String name = ((SidedConnectPacket) packet).getName();
-                        packet = new ConnectPacket(this.packet.getAddress().getHostName(), this.packet.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());
-                    }
-                    for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
-                        final Method method = pair.getValue();
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(pair.getKey(), packet);
-                        } catch (final Exception ignored) {
-                        }
-                    }
+                    DatagramPacket packet = new DatagramPacket(new byte[1024 * 1024], 1024 * 1024);
+                    // always gc
+                    this.socket.receive(packet);
+                    scheduler.run(() -> handle(packet));
+                    while (scheduler.getRemainingTasks().size() > 20);
                 } catch (final Exception e) {
                     if (this.socket.isClosed())
                         return;
@@ -90,6 +56,7 @@ public class FocessUDPSocket extends BothSideSocket {
     @Override
     public void close() {
         super.close();
+        this.scheduler.close();
         this.socket.close();
     }
 
@@ -142,6 +109,51 @@ public class FocessUDPSocket extends BothSideSocket {
             }
         }
         return false;
+    }
+    
+    private void handle(DatagramPacket p) {
+        try {
+            final PacketPreCodec packetPreCodec = new PacketPreCodec();
+            if (this.isServerSide()) {
+                packetPreCodec.push(p.getData(), p.getOffset(), p.getLength());
+                int packetId = packetPreCodec.readInt();
+                if (packetId == -1) {
+                    SimpleClient client = ((ServerReceiver) this.getReceiver()).getClient(packetPreCodec.readInt());
+                    if (client == null || !client.isEncrypt())
+                        return;
+                    byte[] data = RSA.decryptRSA(packetPreCodec.readByteArray(), client.getPrivateKey());
+                    packetPreCodec.clear();
+                    packetPreCodec.push(data);
+                } else packetPreCodec.reset();
+            } else if (this.isClientSide()) {
+                if (!((ClientReceiver) this.getReceiver()).isEncrypt())
+                    packetPreCodec.push(p.getData(), p.getOffset(), p.getLength());
+                else {
+                    byte[] data = Bytes.toArray(Bytes.asList(p.getData()).subList(p.getOffset(), p.getOffset() + p.getLength()));
+                    packetPreCodec.push(RSA.decryptRSA(data, ((ClientReceiver) this.getReceiver()).getPrivateKey()));
+                }
+            }
+            Packet packet = packetPreCodec.readPacket();
+            if (isDebug())
+                if (this.isServerSide())
+                    System.out.println("S FocessSocket: receive packet: " + packet);
+                else if (this.isClientSide())
+                    System.out.println("SC FocessSocket: receive packet: " + packet);
+            if (packet instanceof SidedConnectPacket) {
+                final String name = ((SidedConnectPacket) packet).getName();
+                packet = new ConnectPacket(p.getAddress().getHostName(), p.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());
+            }
+            for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
+                final Method method = pair.getValue();
+                try {
+                    method.setAccessible(true);
+                    method.invoke(pair.getKey(), packet);
+                } catch (final Exception ignored) {
+                }
+            }
+        } catch (Exception ignored) {
+            
+        }
     }
 
 }

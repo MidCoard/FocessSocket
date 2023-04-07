@@ -23,7 +23,7 @@ public class FocessSidedReceiver extends AServerReceiver {
 
     @Nullable
     @PacketHandler
-    public ConnectedPacket onConnect(final SidedConnectPacket packet) {
+    public synchronized ConnectedPacket onConnect(final SidedConnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("P FocessSocket: client " + packet.getName() + " connect");
         for (final SimpleClient simpleClient : this.clientInfos.values())
@@ -43,7 +43,7 @@ public class FocessSidedReceiver extends AServerReceiver {
 
     @Nullable
     @PacketHandler
-    public Packet onWait(@NotNull final WaitPacket packet) {
+    public synchronized Packet onWait(@NotNull final WaitPacket packet) {
         if (ASocket.isDebug())
             System.out.println("P FocessSocket: client " + packet.getClientId() + " send wait");
         if (this.clientInfos.get(packet.getClientId()) != null) {
@@ -60,7 +60,7 @@ public class FocessSidedReceiver extends AServerReceiver {
     }
 
     @PacketHandler
-    public void onDisconnect(@NotNull final DisconnectPacket packet) {
+    public synchronized void onDisconnect(@NotNull final DisconnectPacket packet) {
         if (ASocket.isDebug())
             System.out.println("FocessSocket " + this + ": client " + packet.getClientId() + " disconnect");
         if (this.clientInfos.get(packet.getClientId()) != null) {
