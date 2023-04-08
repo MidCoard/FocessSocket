@@ -10,12 +10,12 @@ Maven:
 <dependency>
     <groupId>top.focess</groupId>
     <artifactId>focess-socket</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
 </dependency>
 ```
 
 Gradle:
 
 ```gradle
-implementation 'top.focess:focess-socket:1.1.5'
+implementation 'top.focess:focess-socket:1.1.6'
 ```
