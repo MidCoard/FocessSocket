@@ -147,11 +147,11 @@ public abstract class AClientReceiver implements ClientReceiver {
     public synchronized void onConnected(final ConnectedPacket packet) {
         if (this.connected) {
             if (ASocket.isDebug())
-                System.out.println("C FocessSocket: client reject client " + this.name + " connect from " + this.host + ":" + this.port + " because of already connected");
+                System.out.println("C FocessSocket: client reject client " + this.name + " connecting from " + this.host + ":" + this.port + " because of already connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("C FocessSocket: server accept client " + this.name + " connect from " + this.host + ":" + this.port);
+            System.out.println("C FocessSocket: server accept client " + this.name + " connecting from " + this.host + ":" + this.port);
         this.token = packet.getToken();
         this.id = packet.getClientId();
         this.key = packet.getKey();
@@ -167,12 +167,12 @@ public abstract class AClientReceiver implements ClientReceiver {
         synchronized (this) {
             if (!this.connected) {
                 if (ASocket.isDebug())
-                    System.out.println("C FocessSocket: client reject client " + this.name + " receive packet from " + this.host + ":" + this.port + " because of not connected");
+                    System.out.println("C FocessSocket: client reject client " + this.name + " receiving packet from " + this.host + ":" + this.port + " because of not connected");
                 return;
             }
         }
         if (ASocket.isDebug())
-            System.out.println("C FocessSocket: client accept client " + this.name + " receive packet from " + this.host + ":" + this.port);
+            System.out.println("C FocessSocket: client accept client " + this.name + " receiving packet from " + this.host + ":" + this.port + ", packet: " + packet.getPacket());
         for (final PackHandler packHandler : this.packHandlers.getOrDefault(packet.getPacket().getClass(), Lists.newArrayList()))
             packHandler.handle(this.id, packet.getPacket());
     }
@@ -181,11 +181,11 @@ public abstract class AClientReceiver implements ClientReceiver {
     public synchronized void onServerHeart(final ServerHeartPacket packet) {
         if (!this.connected) {
             if (ASocket.isDebug())
-                System.out.println("C FocessSocket: client reject server " + this.name + " send heart from " + this.host + ":" + this.port + " because of not connected");
+                System.out.println("C FocessSocket: client reject server " + this.name + " sending heart from " + this.host + ":" + this.port + " because of not connected");
             return;
         }
         if (ASocket.isDebug())
-            System.out.println("C FocessSocket: client accept server " + this.name + " send heart from " + this.host + ":" + this.port);
+            System.out.println("C FocessSocket: client accept server " + this.name + " sending heart from " + this.host + ":" + this.port);
         this.lastHeart = System.currentTimeMillis();
     }
 

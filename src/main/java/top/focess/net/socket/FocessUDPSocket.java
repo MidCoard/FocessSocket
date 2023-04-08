@@ -67,7 +67,7 @@ public class FocessUDPSocket extends BothSideSocket {
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
-            System.out.println("SC FocessSocket: send packet: " + packet);
+            System.out.println("UC FocessSocket: client send packet: " + packet + " from localhost:" + this.localPort + " to " + host + ":" + port );
         if (packetPreCodec.writePacket(packet)) {
             final DatagramPacket sendPacket;
             if (((ClientReceiver) this.getReceiver()).isEncrypt() && !(packet instanceof SidedConnectPacket) && !(packet instanceof ConnectPacket)) {
@@ -93,7 +93,7 @@ public class FocessUDPSocket extends BothSideSocket {
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
-            System.out.println("S FocessSocket: send packet: " + packet + " to " + host + ":" + port);
+            System.out.println("US FocessSocket: server send packet: " + packet + " from localhost:" + this.localPort + " to " + host + ":" + port);
         if (packetPreCodec.writePacket(packet)) {
             final DatagramPacket sendPacket;
             if (client.isEncrypt()) {
@@ -136,9 +136,9 @@ public class FocessUDPSocket extends BothSideSocket {
             Packet packet = packetPreCodec.readPacket();
             if (isDebug())
                 if (this.isServerSide())
-                    System.out.println("S FocessSocket: receive packet: " + packet);
+                    System.out.println("US FocessSocket: server receive packet: " + packet + " from " + p.getAddress().getHostName() + ":" + p.getPort() + " to localhost:" + this.localPort);
                 else if (this.isClientSide())
-                    System.out.println("SC FocessSocket: receive packet: " + packet);
+                    System.out.println("UC FocessSocket: client receive packet: " + packet + " from " + p.getAddress().getHostName() + ":" + p.getPort() + " to localhost:" + this.localPort);
             if (packet instanceof SidedConnectPacket) {
                 final String name = ((SidedConnectPacket) packet).getName();
                 packet = new ConnectPacket(p.getAddress().getHostName(), p.getPort(), name, ((SidedConnectPacket) packet).isServerHeart(), ((SidedConnectPacket) packet).isEncrypt(), ((SidedConnectPacket) packet).getKey());

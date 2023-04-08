@@ -58,7 +58,7 @@ public class FocessSocket extends BothSideSocket {
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
-            System.out.println("SC FocessSocket: send packet: " + packet);
+            System.out.println("CN FocessSocket: client send packet: " + packet + " from localhost:" + this.localPort +  " to " + targetHost + ":" + targetPort);
         if (packetPreCodec.writePacket(packet))
             try {
                 final java.net.Socket socket = new java.net.Socket(targetHost, targetPort);
@@ -95,7 +95,7 @@ public class FocessSocket extends BothSideSocket {
             return false;
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
         if (isDebug())
-            System.out.println("S FocessSocket: send packet: " + packet + " to " + host + ":" + port);
+            System.out.println("SN FocessSocket: server send packet: " + packet + " from localhost:" + this.localPort +  " to " + host + ":" + port);
         if (packetPreCodec.writePacket(packet))
             try {
                 final java.net.Socket socket = new java.net.Socket(host, port);
@@ -152,9 +152,9 @@ public class FocessSocket extends BothSideSocket {
             final Packet packet = packetPreCodec.readPacket();
             if (isDebug())
                 if (this.isServerSide())
-                    System.out.println("S FocessSocket: receive packet: " + packet);
+                    System.out.println("SN FocessSocket: server receive packet: " + packet + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " to localhost:" + this.localPort);
                 else if (this.isClientSide())
-                    System.out.println("SC FocessSocket: receive packet: " + packet);
+                    System.out.println("CN FocessSocket: client receive packet: " + packet + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " to localhost:" + this.localPort);
             if (packet != null)
                 for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
                     final Method method = pair.getValue();

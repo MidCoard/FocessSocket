@@ -35,12 +35,11 @@ public class FocessSidedClientSocket extends ClientSocket {
 
     public <T extends Packet> boolean sendPacket(final T packet) {
         if (isDebug())
-            System.out.println("PC FocessSocket: send packet: " + packet);
+            System.out.println("PC FocessSocket: client send packet: " + packet + " from localhost to " + this.host + ":" + this.port);
         final PacketPreCodec packetPreCodec = new PacketPreCodec();
-        try {
-            if (!packetPreCodec.writePacket(packet))
-                return false;
-            final java.net.Socket socket = new java.net.Socket(this.host, this.port);
+        if (!packetPreCodec.writePacket(packet))
+            return false;
+        try (final java.net.Socket socket = new java.net.Socket(this.host, this.port)) {
             final OutputStream outputStream = socket.getOutputStream();
             if (this.getReceiver().isEncrypt() && !(packet instanceof SidedConnectPacket)) {
                 PacketPreCodec codec = new PacketPreCodec();
@@ -68,7 +67,7 @@ public class FocessSidedClientSocket extends ClientSocket {
             }
             final Packet p = codec.readPacket();
             if (isDebug())
-                System.out.println("PC FocessSocket: receive packet: " + p);
+                System.out.println("PC FocessSocket: client receive packet: " + p + " from " + this.host + ":" + this.port + " to localhost:" + socket.getLocalPort());
             if (p != null)
                 for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(p.getClass(), Lists.newArrayList())) {
                     final Method method = pair.getValue();
@@ -79,7 +78,7 @@ public class FocessSidedClientSocket extends ClientSocket {
                     }
                 }
             return true;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }

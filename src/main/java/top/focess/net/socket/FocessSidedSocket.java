@@ -89,7 +89,7 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
             } else packetPreCodec.reset();
             final Packet packet = packetPreCodec.readPacket();
             if (isDebug())
-                System.out.println("P FocessSocket: receive packet: " + packet);
+                System.out.println("PS FocessSocket: server receive packet: " + packet + " from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort() + " to localhost:" + this.localPort);
             final OutputStream outputStream = socket.getOutputStream();
             if (packet instanceof ClientPacket)
                 for (final Pair<Receiver, Method> pair : this.packetMethods.getOrDefault(packet.getClass(), Lists.newArrayList())) {
@@ -98,7 +98,7 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
                         method.setAccessible(true);
                         final Object o = method.invoke(pair.getKey(), packet);
                         if (isDebug())
-                            System.out.println("P FocessSocket: send packet: " + o);
+                            System.out.println("PS FocessSocket: server send packet: " + o + " from localhost:" + this.localPort + " to " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
                         if (o instanceof ServerPacket) {
                             final PacketPreCodec handler = new PacketPreCodec();
                             handler.writePacket((Packet) o);
