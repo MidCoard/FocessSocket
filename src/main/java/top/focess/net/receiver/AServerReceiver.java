@@ -140,7 +140,7 @@ public abstract class AServerReceiver implements ServerReceiver {
     }
 
     @PacketHandler
-    public synchronized void onClientPacket(@NotNull final ClientPackPacket packet) {
+    public void onClientPacket(@NotNull final ClientPackPacket packet) {
         if (this.clientInfos.get(packet.getClientId()) == null) {
             if (ASocket.isDebug())
                 System.out.println("S FocessSocket " + this + ": server reject server receiving client packet from client " + packet.getClientId() + " because of client not exist");
