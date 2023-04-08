@@ -28,6 +28,8 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
     private final ThreadPoolScheduler scheduler = new ThreadPoolScheduler(10, false, "FocessSidedSocket", true);
 
     public FocessSidedSocket(final int localPort) throws IllegalPortException {
+        this.scheduler.setThreadUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
+        this.scheduler.setUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
         this.localPort = localPort;
         super.registerReceiver(new FocessSidedReceiver(this));
         try {
@@ -39,7 +41,7 @@ public class FocessSidedSocket extends top.focess.net.socket.ServerSocket {
             while (!this.server.isClosed()) {
                 try {
                     final Socket socket = this.server.accept();
-                    scheduler.run(() -> handle(socket));
+                    scheduler.run(() -> handle(socket)).setExceptionHandler(Throwable::printStackTrace);
                 } catch (final Exception e) {
                     if (this.server.isClosed())
                         return;

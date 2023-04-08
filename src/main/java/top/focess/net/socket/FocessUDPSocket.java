@@ -30,6 +30,8 @@ public class FocessUDPSocket extends BothSideSocket {
     }
 
     public FocessUDPSocket(final int port) throws IllegalPortException {
+        this.scheduler.setThreadUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
+        this.scheduler.setUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
         try {
             this.socket = port == 0 ? new DatagramSocket() : new DatagramSocket(port);
             this.localPort = this.socket.getLocalPort();
@@ -42,7 +44,7 @@ public class FocessUDPSocket extends BothSideSocket {
                     DatagramPacket packet = new DatagramPacket(new byte[1024 * 1024], 1024 * 1024);
                     // always gc
                     this.socket.receive(packet);
-                    scheduler.run(() -> handle(packet));
+                    scheduler.run(() -> handle(packet)).setExceptionHandler(Throwable::printStackTrace);
                     while (scheduler.getRemainingTasks().size() > 20);
                 } catch (final Exception e) {
                     if (this.socket.isClosed())

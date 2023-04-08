@@ -32,6 +32,8 @@ public class FocessSocket extends BothSideSocket {
     }
 
     public FocessSocket(final int localPort) throws IllegalPortException {
+        this.scheduler.setThreadUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
+        this.scheduler.setUncaughtExceptionHandler((thread, throwable) -> throwable.printStackTrace());
         try {
             this.server = new ServerSocket(localPort);
             this.localPort = this.server.getLocalPort();
@@ -42,7 +44,7 @@ public class FocessSocket extends BothSideSocket {
             while (!this.server.isClosed())
                 try {
                     final Socket socket = this.server.accept();
-                    scheduler.run(() -> handle(socket));
+                    scheduler.run(() -> handle(socket)).setExceptionHandler(Throwable::printStackTrace);
                 } catch (final Exception e) {
                     if (this.server.isClosed())
                         return;
